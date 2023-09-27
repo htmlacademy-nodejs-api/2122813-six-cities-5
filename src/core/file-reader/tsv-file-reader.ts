@@ -1,93 +1,37 @@
-import { readFileSync, accessSync, constants } from 'node:fs';
-
+import EventEmitter from 'node:events';
+import { createReadStream } from 'node:fs';
 import { FileReaderInterface } from './file-reader.interface.js';
 
-import type { RentOffer } from '../../types/rent-offer.type.js';
-import type { User } from '../../types/user.type.js';
-import type { Location } from '../../types/location.type.js';
-import type { Goods } from '../../types/goods.type.js';
-import type { City } from '../../types/city.type.js';
-import type { OfferType } from '../../types/offer-type.type.js';
-import type { UserStatus } from '../../types/user-status.type.js';
+const CHUNK_SIZE = 16384; // Это 16KB
 
-export default class TSVFileReader implements FileReaderInterface {
-  private rawData: string | undefined;
 
-  constructor(public filename: string) { }
-
-  public read(): void {
-    try {
-      accessSync(this.filename, constants.R_OK);
-      this.rawData = readFileSync(this.filename, { encoding: 'utf8' });
-    } catch (err) {
-      console.error(err);
-    }
+export default class TSVFileReader extends EventEmitter implements FileReaderInterface {
+  constructor(public filename: string) {
+    super();
   }
 
-  public toArray(): RentOffer[] {
-    if (!this.rawData) {
-      return [];
+  public async read(): Promise<void> {
+    const stream = createReadStream(this.filename, {
+      highWaterMark: CHUNK_SIZE,
+      encoding: 'utf-8',
+    });
+
+    let rowStringBuilder = '';
+    let nextLinePosition = -1;
+    let importedRowCount = 0;
+
+    for await (const chunk of stream) {
+      rowStringBuilder += chunk.toString();
+
+      while ((nextLinePosition = rowStringBuilder.indexOf('\n')) >= 0) {
+        const completeRow = rowStringBuilder.slice(0, nextLinePosition + 1);
+        rowStringBuilder = rowStringBuilder.slice(++nextLinePosition);
+        importedRowCount++;
+
+        this.emit('newline', completeRow);
+      }
     }
 
-    return this.rawData
-      .split('\n')
-      .filter((row) => row.trim() !== '')
-      .map((line) => line.split('\t'))
-      .map((offer) => {
-        const [
-          city,
-          previewImage,
-          images,
-          title,
-          offerDate,
-          isPremium,
-          isFavorite,
-          rating,
-          type,
-          bedrooms,
-          maxAdults,
-          price,
-          goods,
-          name,
-          email,
-          userStatus,
-          avatarImage,
-          description,
-          latitude,
-          longitude
-        ] = offer;
-
-        const offerImages: string[] = images.split(';');
-        const offerGoods = goods.split(';') as Goods[];
-        const location: Location = {
-          latitude: Number.parseFloat(latitude),
-          longitude: Number.parseFloat(longitude),
-        };
-        const advertiser: User = {
-          username: name,
-          email,
-          avatarPath: avatarImage,
-          status: userStatus as UserStatus
-        };
-
-        return {
-          title,
-          description,
-          offerDate,
-          city: city as City,
-          previewImage,
-          images: offerImages,
-          isPremium: isPremium === 'true',
-          isFavorite: isFavorite === 'true',
-          rating: Number.parseFloat(rating),
-          type: type as OfferType,
-          bedrooms: Number.parseInt(bedrooms, 10),
-          maxAdults: Number.parseInt(maxAdults, 10),
-          price: Number.parseInt(price, 10),
-          goods: offerGoods,
-          advertiser,
-          location
-        };
-      });
+    this.emit('end', importedRowCount);
   }
 }

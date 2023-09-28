@@ -7,7 +7,7 @@ import type { User } from './user.type.js';
 export type RentOffer = {
   title: string,
   description: string,
-  offerDate: string,
+  offerDate: Date,
   city: City
   previewImage: string,
   images: string[],

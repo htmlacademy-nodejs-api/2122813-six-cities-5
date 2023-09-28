@@ -1,0 +1,101 @@
+{
+  "api": {
+    "titles": [
+      "Waterfront with extraordinary view",
+      "Wood and stone place",
+      "The house among olive",
+      "Loft Studio in the Central Area",
+      "Nice, cozy, warm big bed apartment",
+      "Canal View Prinsengracht",
+      "The Joshua Tree House",
+      "House in countryside",
+      "The Joshua Tree House",
+      "Perfectly located Castro",
+      "Penthouse, 4-5 rooms + 5 balconies",
+      "Amazing and Extremely Central Flat"
+    ],
+    "descriptions": [
+      "Relax, rejuvenate and unplug in this ultimate rustic getaway experience in the country. In our beautiful screened Pondhouse, you can gaze at the stars and listen to the sounds of nature from your cozy warm bed.",
+      "Peaceful studio in the most wanted area in town. Quiet house Near of everything. Completely renovated. Lovely neighbourhood, lot of trendy shops, restaurants and bars in a walking distance.",
+      "I am happy to welcome you to my apartment in the city center! Three words: location, cosy and chic!",
+      "I rent out a very sunny and bright apartment only 7 minutes walking distance to the metro station. The apartment has a spacious living room with a kitchen, one bedroom and a bathroom with mit bath. A terrace can be used in summer.",
+      "Discover daily local life in city center, friendly neighborhood, clandestine casino, karaoke, old-style artisans, art gallery and artist studio downstairs.",
+      "Design interior in most sympathetic area! Complitely renovated, well-equipped, cosy studio in idyllic, over 100 years old wooden house. Calm street, fast connection to center and airport.",
+      "This is a place for dreamers to reset, reflect, and create. Designed with a 'slow' pace in mind, our hope is that you enjoy every part of your stay; from making local coffee by drip in the morning, choosing the perfect record to put on as the sun sets.",
+      "A new spacious villa, one floor. All commodities, jacuzzi and beautiful scenery. Ideal for families or friends.",
+      "The best view of the city center from the balcony. You can order a cup of coffee at one of dozens of restaurants nearby. Friendly neighbors guaranteed!"
+    ],
+    "offerImages": [
+      "offer-image-1.jpg",
+      "offer-image-2.jpg",
+      "offer-image-3.jpg",
+      "offer-image-4.jpg",
+      "offer-image-5.jpg",
+      "offer-image-6.jpg",
+      "offer-image-7.jpg",
+      "offer-image-8.jpg",
+      "offer-image-9.jpg"
+    ],
+    "previewImages": [
+      "preview-image-1.jpg",
+      "preview-image-2.jpg",
+      "preview-image-3.jpg",
+      "preview-image-4.jpg",
+      "preview-image-5.jpg",
+      "preview-image-6.jpg"
+    ],
+    "usernames": [
+      "Eloise",
+      "Beatrice",
+      "Ellen",
+      "Margaret",
+      "Daisy",
+      "Mark",
+      "Joel",
+      "Eddy",
+      "Rokky",
+      "John"
+    ],
+    "emails": [
+      "mock@test.com",
+      "keks@cat.net",
+      "hi@keks.ru",
+      "test@keks.org",
+      "user@email.ua",
+      "keks@keks.de",
+      "lawl@rofl.org",
+      "g-easy@beenon.com",
+      "flawa@freeflaw.ja"
+    ],
+    "avatars": [
+      "user-avatar-1.jpg",
+      "user-avatar-2.jpg",
+      "user-avatar-3.jpg",
+      "user-avatar-4.jpg",
+      "user-avatar-5.jpg",
+      "user-avatar-6.jpg"
+    ],
+    "latitudes": [
+      "51.243402",
+      "52.37454",
+      "52.3285414",
+      "50.846557",
+      "50.837557",
+      "50.938361",
+      "50.917361",
+      "50.865556999999995",
+      "50.950361"
+    ],
+    "longitudes" : [
+      "6.959974",
+      "6.977974",
+      "4.351697",
+      "4.371696999999999",
+      "6.942156",
+      "6.961974",
+      "4.346697",
+      "4.9099759999999995",
+      "4.351697"
+    ]
+  }
+}

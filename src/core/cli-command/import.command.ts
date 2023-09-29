@@ -34,10 +34,8 @@ export default class ImportCommand implements CliCommandInterface {
     fileReader.on('newline', this.onNewLine);
     fileReader.on('end', this.onComplete);
 
-    try {
-      await fileReader.read();
-    } catch(err) {
+    await fileReader.read().catch((err) => {
       console.log(`Can't read the file: ${getErrorMessage(err)}`);
-    }
+    });
   }
 }

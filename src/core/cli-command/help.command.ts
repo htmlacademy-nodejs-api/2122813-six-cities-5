@@ -9,7 +9,7 @@ export default class HelpCommand implements CliCommandInterface {
       `
       Программа для подготовки данных для REST API сервера.
       Пример:
-          ${chalk.green('main.js --<command> [--arguments]')}
+          ${chalk.green('main.rest.js --<command> [--arguments]')}
       Команды:
           ${chalk.green('--version:')}                   ${chalk.gray('# выводит номер версии')}
           ${chalk.green('--help:')}                      ${chalk.gray('# печатает этот текст')}

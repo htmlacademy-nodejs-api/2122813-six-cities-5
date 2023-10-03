@@ -1,4 +1,4 @@
 export enum UserStatus {
-  Default = 'default',
+  Default = 'обычный',
   Pro = 'pro'
 }

@@ -1,7 +1,10 @@
+import { injectable } from 'inversify';
+
 import { CliCommandInterface } from '../core/cli-command/cli-command.interface.js';
 
 type ParsedCommand = Record<string, string[]>
 
+@injectable()
 export default class CLIApplication {
   private commands: Record<string, CliCommandInterface> = {};
   private readonly defaultCommand = '--help';

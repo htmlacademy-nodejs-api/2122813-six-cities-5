@@ -1,25 +1,24 @@
 import 'reflect-metadata';
 import { Container } from 'inversify';
 
-import RestApplication from './app/rest.js';
-import PinoLogger from './core/logger/pino.logger.js';
-import ConfigService from './core/config/config.service.js';
-import { LoggerInterface } from './core/logger/logger.interface.js';
-import { ConfigInterface } from './core/config/config.interface.js';
-import { RestSchema } from './core/config/rest.schema.js';
-import { RestAppComponent } from './types/rest-app-component.type.js';
+import RestApplication from './app/rest.application.js';
+import { AppComponent } from './types/app-component.type.js';
+import { getErrorMessage } from './core/utils/common.js';
+import { createRestApplicationContainer } from './app/rest.container.js';
+import { createUserContainer } from './modules/user/user.container.js';
+import { createRentOfferContainer } from './modules/rent-offer/rent-offer.container.js';
 
 async function bootstrap() {
-  const container = new Container();
+  const mainContainer = Container.merge(
+    createRestApplicationContainer(),
+    createUserContainer(),
+    createRentOfferContainer()
+  );
 
-  container.bind<RestApplication>(RestAppComponent.RestApplication).to(RestApplication).inSingletonScope();
-  container.bind<LoggerInterface>(RestAppComponent.LoggerInterface).to(PinoLogger).inSingletonScope();
-  container.bind<ConfigInterface<RestSchema>>(RestAppComponent.ConfigInterface).to(ConfigService).inSingletonScope();
-
-  const restApp = container.get<RestApplication>(RestAppComponent.RestApplication);
+  const restApp = mainContainer.get<RestApplication>(AppComponent.RestApplication);
   await restApp.init();
 }
 
 bootstrap().catch((error) => {
-  console.log('Bootstrap Rest Application error: ', error);
+  console.log(`Bootstrap Rest Application error: ${getErrorMessage(error)}`);
 });

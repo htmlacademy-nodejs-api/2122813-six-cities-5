@@ -1,5 +1,5 @@
 export enum Goods {
-  Breakfasy = 'Breakfast',
+  Breakfast = 'Breakfast',
   AirConditioning = 'Air conditioning',
   Laptop = 'Laptop',
   FriendlyWorkspace = 'Friendly workspace',

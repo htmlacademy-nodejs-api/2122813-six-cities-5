@@ -71,7 +71,7 @@ export class RentOfferEntity extends defaultClasses.TimeStamps {
   @prop({ ref: UserEntity, required: true })
   public advertiserId!: Ref<UserEntity>;
 
-  @prop({required: true})
+  @prop({required: true, _id: false})
   public location!: Location;
 }
 

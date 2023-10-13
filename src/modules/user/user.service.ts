@@ -6,41 +6,59 @@ import CreateUserDto from './dto/create-user.dto.js';
 import { UserServiceInterface } from './user-service.interface.js';
 import { LoggerInterface } from '../../core/logger/logger.interface.js';
 import { AppComponent } from '../../types/app-component.type.js';
+import UpdateUserDto from './dto/update-user.dto.js';
+import { RentOfferEntity } from '../rent-offer/rent-offer.entity.js';
+import { SortType } from '../../types/sort-order.type.js';
 
 @injectable()
 export default class UserService implements UserServiceInterface {
-
   constructor(
     @inject(AppComponent.LoggerInterface) private readonly logger: LoggerInterface,
     @inject(AppComponent.UserModel) private readonly userModel: types.ModelType<UserEntity>
   ) {}
 
   public async create(dto: CreateUserDto, salt: string): Promise<DocumentType<UserEntity>> {
-
     const user = new UserEntity(dto);
     user.setPassword(dto.password, salt);
-
     const userEntry = await this.userModel.create(user);
     this.logger.info(`New user created: ${user.email}`);
-
     return userEntry;
   }
 
   public async findByEmail(email: string): Promise<DocumentType<UserEntity> | null> {
-    return await this.userModel.findOne({email}).exec();
+    return this.userModel.findOne({email}).exec();
   }
 
   public async findById(userId: string): Promise<DocumentType<UserEntity> | null> {
-    return await this.userModel.findById(userId).exec();
+    return this.userModel.findById(userId).exec();
   }
 
   public async findOrCreate(dto: CreateUserDto, salt: string): Promise<DocumentType<UserEntity>> {
     const existedUser = await this.findByEmail(dto.email);
-
     if (existedUser) {
       return existedUser;
     }
 
     return this.create(dto, salt);
+  }
+
+  public async updateById(userId: string, dto: UpdateUserDto): Promise<DocumentType<UserEntity> | null> {
+    return this.userModel
+      .findByIdAndUpdate(userId, dto, {new: true})
+      .exec();
+  }
+
+  public async findUserFavorites(userId: string): Promise<DocumentType<RentOfferEntity>[] | null> {
+
+    return this.userModel
+      .findById(userId, {favorites: true, _id: false})
+      .populate<{favorites: DocumentType<RentOfferEntity>[]}>('favorites', {}, '', {sort: {createdAt: SortType.Down}})
+      .orFail()
+      .exec()
+      .then((res) => res.favorites);
+  }
+
+  public async changeFavoriteStatus(userId: string, offerId: string, status: boolean): Promise<DocumentType<UserEntity> | null> {
+    return this.userModel.findByIdAndUpdate(userId, {[`${status ? '$push' : '$pull'}`]: { favorites: offerId }}, {new: true}).exec();
   }
 }

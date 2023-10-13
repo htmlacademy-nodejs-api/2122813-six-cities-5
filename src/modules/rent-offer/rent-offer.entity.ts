@@ -75,4 +75,4 @@ export class RentOfferEntity extends defaultClasses.TimeStamps {
   public location!: Location;
 }
 
-export const RentOfferModel = getModelForClass(RentOfferEntity);
+//export const RentOfferModel = getModelForClass(RentOfferEntity);

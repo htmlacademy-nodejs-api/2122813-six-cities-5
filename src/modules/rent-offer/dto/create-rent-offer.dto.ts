@@ -1,7 +1,7 @@
-import type { City } from '../../types/city.type.js';
-import type { Goods } from '../../types/goods.type.js';
-import type { Location } from '../../types/location.type.js';
-import type { OfferType } from '../../types/offer-type.type.js';
+import type { City } from '../../../types/city.type.js';
+import type { Goods } from '../../../types/goods.type.js';
+import type { Location } from '../../../types/location.type.js';
+import type { OfferType } from '../../../types/offer-type.type.js';
 
 export default class CreateRentOfferDto {
   public title!: string;

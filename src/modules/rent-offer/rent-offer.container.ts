@@ -4,7 +4,8 @@ import { types } from '@typegoose/typegoose';
 import { AppComponent } from '../../types/app-component.type.js';
 import { RentOfferServiceInterface } from './rent-offer-service.interface.js';
 import RentOfferService from './rent-offer.service.js';
-import { RentOfferEntity, RentOfferModel } from './rent-offer.entity.js';
+import { RentOfferEntity } from './rent-offer.entity.js';
+import { RentOfferModel } from '../entities/index.js';
 
 export function createRentOfferContainer() {
   const rentOfferContainer = new Container();

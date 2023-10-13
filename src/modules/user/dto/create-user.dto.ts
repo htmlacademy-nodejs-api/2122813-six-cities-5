@@ -1,4 +1,4 @@
-import { UserStatus } from '../../types/user-status.type.js';
+import { UserStatus } from '../../../types/user-status.type.js';
 
 export default class CreateUserDto {
   public username!: string;

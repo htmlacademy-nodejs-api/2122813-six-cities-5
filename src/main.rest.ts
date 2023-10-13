@@ -7,12 +7,14 @@ import { getErrorMessage } from './core/utils/common.js';
 import { createRestApplicationContainer } from './app/rest.container.js';
 import { createUserContainer } from './modules/user/user.container.js';
 import { createRentOfferContainer } from './modules/rent-offer/rent-offer.container.js';
+import { createCommentContainer } from './modules/comment/comment.container.js';
 
 async function bootstrap() {
   const mainContainer = Container.merge(
     createRestApplicationContainer(),
     createUserContainer(),
-    createRentOfferContainer()
+    createRentOfferContainer(),
+    createCommentContainer(),
   );
 
   const restApp = mainContainer.get<RestApplication>(AppComponent.RestApplication);

@@ -1,4 +1,3 @@
-import type { City } from '../../types/city.type.js';
 import type { Goods } from '../../types/goods.type.js';
 import type { Location } from '../../types/location.type.js';
 import type { OfferType } from '../../types/offer-type.type.js';
@@ -9,8 +8,9 @@ import type { User } from '../../types/user.type.js';
 
 export function createOffer(offerData: string): RentOffer {
   const [
-    title, description, offerDate, city,
-    previewImage, images, isPremium, isFavorite,
+    title, description, offerDate, cityName,
+    cityLatitude, cityLongitude, previewImage,
+    images, isPremium, isFavorite,
     rating, type, bedrooms, maxAdults,
     price, goods, username, email,
     avatar, userStatus, longitude, latitude
@@ -33,7 +33,11 @@ export function createOffer(offerData: string): RentOffer {
     title,
     description,
     offerDate: new Date(offerDate),
-    city: city as City,
+    city: {
+      name: cityName,
+      latitude: Number.parseFloat(cityLatitude),
+      longitude: Number.parseFloat(cityLongitude)
+    },
     previewImage,
     images: offerImages,
     isPremium: isPremium === 'true',

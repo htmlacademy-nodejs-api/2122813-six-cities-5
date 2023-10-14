@@ -1,6 +1,7 @@
 import { OfferGeneratorInterface } from './offer-generator.interface.js';
 import { getRandomOfferDate, getRandomNumber, getRandomArrItem, getRandomArrItems } from '../../core/utils/random.js';
-import { City } from '../../types/city.type.js';
+import { CityName } from '../../types/city.type.js';
+import { Cities } from '../rent-offer/rent-offer.constants.js';
 import { OfferType } from '../../types/offer-type.type.js';
 import { Goods } from '../../types/goods.type.js';
 import { UserStatus } from '../../types/user-status.type.js';
@@ -29,7 +30,12 @@ export default class OfferGenerator implements OfferGeneratorInterface {
     const title = getRandomArrItem<string>(this.mockData.titles);
     const description = getRandomArrItem<string>(this.mockData.descriptions);
     const offerDate = getRandomOfferDate().toISOString();
-    const city = getRandomArrItem<string>(Object.values(City));
+
+    const city = getRandomArrItem(Object.values(CityName).filter((x) => typeof x === 'string'));
+    const cityName = city;
+    const cityLatitude = Cities[city].latitude;
+    const cityLongitude = Cities[city].longitude;
+
     const previewImage = getRandomArrItem<string>(this.mockData.previewImages);
     const images = getRandomArrItems<string>(this.mockData.offerImages, OFFER_IMAGES_COUNT).join(';');
     const isPremium = getRandomArrItem<string>(['true', 'false']);
@@ -48,11 +54,11 @@ export default class OfferGenerator implements OfferGeneratorInterface {
     const latitude = getRandomArrItem<string>(this.mockData.latitudes);
 
     return [
-      title, description, offerDate, city,
-      previewImage, images, isPremium, isFavorite,
-      rating, type, bedrooms, maxAdults,
-      price, goods, username, email,
-      avatar, userStatus, longitude, latitude
+      title, description, offerDate, cityName, cityLatitude,
+      cityLongitude, previewImage, images, isPremium, isFavorite,
+      rating, type, bedrooms, maxAdults, price,
+      goods, username, email, avatar, userStatus,
+      longitude, latitude
     ].join('\t');
   }
 }

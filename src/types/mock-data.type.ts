@@ -7,5 +7,5 @@ export type MockData = {
   emails: string[];
   avatars: string[];
   latitudes: string[];
-  longitudes: string[]
+  longitudes: string[];
 };

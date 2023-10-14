@@ -4,13 +4,16 @@ import { createOffer } from '../utils/offer.js';
 import { getErrorMessage } from '../utils/common.js';
 import RentOfferService from '../../modules/rent-offer/rent-offer.service.js';
 import PinoLogger from '../logger/pino.logger.js';
-import { RentOfferModel } from '../../modules/rent-offer/rent-offer.entity.js';
-import { UserModel } from '../../modules/user/user.entity.js';
+import { RentOfferModel } from '../../modules/entities/index.js';
+import { UserModel } from '../../modules/entities/index.js';
 import UserService from '../../modules/user/user.service.js';
 import MongoClientService from '../datdbase-client/mongo-client.service.js';
 import { RentOffer } from '../../types/rent-offer.type.js';
 import { getRandomArrItem } from '../utils/random.js';
 import { passwords } from '../../../mocks/passwords.js';
+import { getMongoURI } from '../utils/db-helper.js';
+
+const DEFAULT_DB_PORT = '27017';
 
 export default class ImportCommand implements CliCommandInterface {
   public readonly name = '--import';
@@ -51,7 +54,15 @@ export default class ImportCommand implements CliCommandInterface {
     this.databaseService.disconnect();
   }
 
-  public async execute(filename: string, DBUriPath: string, salt: string): Promise<void> {
+  public async execute(
+    filename: string,
+    login: string,
+    password: string,
+    host: string,
+    dbname: string,
+    salt: string
+  ): Promise<void> {
+    const DBUriPath = getMongoURI(login, password, host, DEFAULT_DB_PORT, dbname);
     this.salt = salt;
 
     if (!filename) {

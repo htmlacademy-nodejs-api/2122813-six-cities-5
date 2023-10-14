@@ -21,7 +21,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/User"
+              $ref: "#/components/schemas/NewUserRequest"
         required: true
 
       responses:
@@ -32,14 +32,14 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
+                $ref: '#/components/schemas/UserResponse'
 
         "409":
           description: Пользователь с таким email уже существует.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/regUserErrorMessage'
+                $ref: '#/components/schemas/RegUserErrorMessage'
 
 
   /users/{userId}/avatar:
@@ -69,35 +69,34 @@ paths:
             schema:
               type: string
               format: binary
-
       responses:
         "200":
           description: Изображение успешно загружено. Возвращает обновленный объект пользователя.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
+                $ref: '#/components/schemas/UserResponse'
 
         '400':
           description: Пользователь не авторизован
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/checkAuthErrorMessage'
+                $ref: '#/components/schemas/CheckAuthErrorMessage'
 
         "401":
           description: Некорректный формат изображения.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/failedUploadAvatarMessage'
+                $ref: '#/components/schemas/FailedUploadAvatarMessage'
 
         "403":
           description: Несоответствие токена и id пользователя
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/wrongPathErrorMessage'
+                $ref: '#/components/schemas/WrongPathErrorMessage'
 
   /users/{userId}/favorites:
      get:
@@ -124,7 +123,6 @@ paths:
           schema:
             type: string
             example: T2xpdmVyLmNvbm5lckBnbWFpbC5jb20=
-
       responses:
         '200':
           description: Массив избранных предложений пользователя.
@@ -135,14 +133,14 @@ paths:
                 items:
                   type: object
                   allOf:
-                    - $ref: '#/components/schemas/RentOfferBasicInfo'
+                    - $ref: '#/components/schemas/RentOfferBasicResponse'
 
         '400':
           description: Пользователь не авторизован
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/checkAuthErrorMessage'
+                $ref: '#/components/schemas/CheckAuthErrorMessage'
 
 
         '403':
@@ -150,7 +148,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/wrongPathErrorMessage'
+                $ref: '#/components/schemas/WrongPathErrorMessage'
 
 
   /users/auth:
@@ -164,9 +162,7 @@ paths:
           application/json:
             schema:
                 $ref: '#/components/schemas/RequestAuth'
-
         required: true
-
       responses:
         "200":
           description:
@@ -175,14 +171,14 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
+                $ref: '#/components/schemas/UserResponse'
 
         "401":
           description: Пользователь с таким email не существует.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/failedAuthErrorMessage'
+                $ref: '#/components/schemas/FailedAuthErrorMessage'
 
     get:
       tags:
@@ -199,20 +195,19 @@ paths:
           schema:
             type: string
             example: T2xpdmVyLmNvbm5lckBnbWFpbC5jb20=
-
       responses:
         '200':
           description: Информация об успешной авторизации пользователя.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
+                $ref: '#/components/schemas/UserResponse'
         '400':
           description: Пользователь не авторизован
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/checkAuthErrorMessage'
+                $ref: '#/components/schemas/CheckAuthErrorMessage'
 
 
   /users/logout:
@@ -234,13 +229,12 @@ paths:
       responses:
         '200':
           description: Сеанс пользователя завершён
-
         '401':
           description: Ошибка завершения сеанса
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/logOutErrorMessage'
+                $ref: '#/components/schemas/LogOutErrorMessage'
 
 
   /rent-offers:
@@ -264,7 +258,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/RentOfferFullInfo'
+              $ref: '#/components/schemas/NewRentOfferRequest'
         required: true
 
       responses:
@@ -273,21 +267,21 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/RentOfferFullInfo'
+                $ref: '#/components/schemas/RentOfferFullResponse'
 
         '400':
           description: Пользователь не авторизован
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/checkAuthErrorMessage'
+                $ref: '#/components/schemas/CheckAuthErrorMessage'
 
         '401':
           description: Ошибка при создании предложения. Не пройдена валидация.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/validationOfferErrorMessage'
+                $ref: '#/components/schemas/ValidationOfferErrorMessage'
 
 
     get:
@@ -315,7 +309,7 @@ paths:
                 items:
                   type: object
                   allOf:
-                    - $ref: '#/components/schemas/RentOfferBasicInfo'
+                    - $ref: '#/components/schemas/RentOfferBasicResponse'
 
   /rent-offers/premium:
     get:
@@ -349,7 +343,6 @@ paths:
           schema:
             type: string
             example: T2xpdmVyLmNvbm5lckBnbWFpbC5jb20=
-
       responses:
         '200':
           description: Массив премиальных предложений.
@@ -357,18 +350,17 @@ paths:
             application/json:
               schema:
                 type: array
-                maxItems: 3
                 items:
                   type: object
                   allOf:
-                    - $ref: '#/components/schemas/RentOfferBasicInfo'
+                    - $ref: '#/components/schemas/RentOfferBasicResponse'
 
         '400':
           description: Пользователь не авторизован
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/checkAuthErrorMessage'
+                $ref: '#/components/schemas/CheckAuthErrorMessage'
 
 
 
@@ -392,14 +384,14 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/RentOfferFullInfo'
+                $ref: '#/components/schemas/RentOfferFullResponse'
 
         '404':
           description: Предложение не найдено
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/offerNotFoundMessage'
+                $ref: '#/components/schemas/OfferNotFoundMessage'
 
     put:
       tags:
@@ -437,23 +429,25 @@ paths:
 
       responses:
         '200':
-          description: изменения успешно применены.
+          description: Изменения успешно применены. Возвращается обновленный объект предложения.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RentOfferFullResponse"
 
         '400':
           description: Пользователь не авторизован.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/checkAuthErrorMessage'
+                $ref: '#/components/schemas/CheckAuthErrorMessage'
 
         '404':
           description: Предложение не найдено
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/offerNotFoundMessage'
-
-
+                $ref: '#/components/schemas/OfferNotFoundMessage'
 
 
     post:
@@ -482,8 +476,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/RentOfferFullInfo'
-
+              $ref: '#/components/schemas/UpdateRentOfferRequest'
 
       responses:
         '200':
@@ -491,28 +484,28 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/RentOfferFullInfo'
+                $ref: '#/components/schemas/RentOfferFullResponse'
 
         '400':
           description: Пользователь не авторизован.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/checkAuthErrorMessage'
+                $ref: '#/components/schemas/CheckAuthErrorMessage'
 
         '401':
           description: ошибка при редактировании предложения
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/validationOfferErrorMessage'
+                $ref: '#/components/schemas/ValidationOfferErrorMessage'
 
         '403':
           description: Ошибка при редактировании предложения другого пользователя
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/editOfferErrorMessage'
+                $ref: '#/components/schemas/UpdateOfferErrorMessage'
 
 
     delete:
@@ -540,20 +533,19 @@ paths:
       responses:
         '200':
           description: Предложение успешно удалено вместе с комментариями к нему
-
         '400':
           description: Пользователь не авторизован.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/checkAuthErrorMessage'
+                $ref: '#/components/schemas/CheckAuthErrorMessage'
 
         '403':
           description: Ошибка при удалении предложения другого пользователя
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/editOfferErrorMessage'
+                $ref: '#/components/schemas/UpdateOfferErrorMessage'
 
 
   /rent-offers/{offerId}/comments:
@@ -579,7 +571,7 @@ paths:
             application/json:
               schema:
                 allOf:
-                  - $ref: '#/components/schemas/Comment'
+                  - $ref: '#/components/schemas/CommentResponse'
 
     post:
       tags:
@@ -607,7 +599,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Comment'
+              $ref: '#/components/schemas/NewCommentRequest'
               required: true
       responses:
         '200':
@@ -615,21 +607,21 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Comment'
+                $ref: '#/components/schemas/CommentResponse'
 
         '400':
           description: Пользователь не авторизован.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/checkAuthErrorMessage'
+                $ref: '#/components/schemas/CheckAuthErrorMessage'
 
         '402':
           description: Ошибка при создании комментария. Не пройдена валидация
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/validationCommentErrorMessage'
+                $ref: '#/components/schemas/ValidationCommentErrorMessage'
 
 
 
@@ -637,13 +629,9 @@ paths:
 
 components:
   schemas:
-    User:
+    NewUserRequest:
       type: object
       properties:
-        id:
-          type: string
-          example: 6329c3d6a04ab1061c6425ea
-          readOnly: true
         email:
           type: string
           format: email
@@ -656,6 +644,8 @@ components:
           writeOnly: true
         username:
           type: string
+          minLength: 1
+          maxLength: 15
           example: SomeNick
         status:
           type: string
@@ -667,15 +657,40 @@ components:
           type: string
           format: binary
           example: /static/avatar/3.jpg
-        authToken:
-          type: string
-          example: "T2xpdmVyLmNvbm5lckBnbWFpbC5jb20="
-          readOnly: true
+      additionalProperties: false
       required:
         - email
         - username
         - password
         - status
+
+
+    UserResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 6329c3d6a04ab1061c6425ea
+          readOnly: true
+        email:
+          type: string
+          format: email
+          example: test@somemail.com
+        username:
+          type: string
+          example: SomeNick
+        status:
+          type: string
+          example: обычный
+        avatarPath:
+          type: string
+          format: binary
+          example: /static/avatar/3.jpg
+        authToken:
+          type: string
+          example: "T2xpdmVyLmNvbm5lckBnbWFpbC5jb20="
+          readOnly: true
+
 
     RequestAuth:
       type: object
@@ -690,53 +705,52 @@ components:
           maxLength: 12
           example: qwerty123
           writeOnly: true
+      additionalProperties: false
       required:
         - email
         - password
 
-    regUserErrorMessage:
+    RegUserErrorMessage:
       type: object
       properties:
         errorMessage:
           type: string
           example: Пользователь с таким e-mail уже существует
 
-    failedUploadAvatarMessage:
+    FailedUploadAvatarMessage:
       type: object
       properties:
         errorMessage:
           type: string
           example: Некорректный формат изображения. Поддерживаемые форматы '.jpg' и '.png'.
 
-    checkAuthErrorMessage:
+    CheckAuthErrorMessage:
       type: object
       properties:
         errorMessage:
           type: string
           example: Пользователь не авторизован.
 
-    failedAuthErrorMessage:
+    FailedAuthErrorMessage:
       type: object
       properties:
         errorMessage:
           type: string
           example: Пользователь с таким email не существует.
 
-    wrongPathErrorMessage:
+    WrongPathErrorMessage:
       type: object
       properties:
         errorMessage:
           type: string
           example: Некорректный id пользователя.
 
-    logOutErrorMessage:
+    LogOutErrorMessage:
       type: object
       properties:
         errorMessage:
           type: string
           example: Ошибка запроса.
-
-
     #Rent offer schemas
     Advertiser-Author:
       type: object
@@ -763,22 +777,143 @@ components:
           example: /static/avatar/3.jpg
 
 
-    RentOfferFullInfo:
+    RentOfferBasicResponse:
       type: object
       properties:
         id:
           type: string
-          example: jkj3k2k3
-          readOnly: true
+          example: j4k3j4k
         offerDate:
           type: string
           format: date-time
-          example: "2023-10-05T14:48:00.000Z"
-          readOnly: true
+          example: '2023-10-05T14:48:00.000Z'
         commentsCount:
+          type: integer
+          example: 22
+        title:
+          type: string
+          example: Beautiful & luxurious studio at great location
+        city:
+          type: object
+          properties:
+            name:
+              type: string
+              example: Amsterdam
+            latitude:
+              type: number
+              example: 24.3434
+            longitude:
+              type: number
+              example: 23.4522
+        previewImage:
+          type: string
+          format: binary
+          example: preview-img/1.png
+        isPremium:
+          type: boolean
+          example: false
+        isFavorite:
+          type: boolean
+          example: true
+        rating:
           type: number
-          example: 50
-          readOnly: true
+          example: 4.8
+        type:
+          type: string
+          example: apartment
+        price:
+          type: integer
+          example: 1200
+
+
+    RentOfferFullResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          example: j4k3j4k
+        offerDate:
+          type: string
+          format: date-time
+          example: '2023-10-05T14:48:00.000Z'
+        commentsCount:
+          type: integer
+          example: 22
+        title:
+          type: string
+          example: Beautiful & luxurious studio at great location
+        description:
+          type: string
+          example: A quiet cozy and picturesque that hides behind a a river by the unique lightness of Amsterdam.
+        city:
+          type: object
+          properties:
+            name:
+              type: string
+              example: Amsterdam
+            latitude:
+              type: number
+              example: 24.3434
+            longitude:
+              type: number
+              example: 23.4522
+        previewImage:
+          type: string
+          format: binary
+          example: preview-img/1.png
+        images:
+          type: array
+          items:
+            type: string
+            format: binary
+            example:
+            - img/1.png
+            - img/2.png
+            - img/3.png
+        isPremium:
+          type: boolean
+          example: false
+        isFavorite:
+          type: boolean
+          example: true
+        rating:
+          type: number
+          example: 4.8
+        type:
+          type: string
+          example: apartment
+        bedrooms:
+          type: integer
+          example: 3
+        maxAdults:
+          type: integer
+          example: 10
+        price:
+          type: integer
+          example: 1200
+        goods:
+          type: array
+          items:
+            type: string
+          example:
+            - Heating
+            - Washer
+        location:
+          type: object
+          properties:
+            latitude:
+              type: number
+              example: 52.3551493
+            longitude:
+              type: number
+              example: 4.67387753
+        advertiser:
+          $ref: '#/components/schemas/Advertiser-Author'
+
+
+    NewRentOfferRequest:
+      type: object
+      properties:
         title:
           type: string
           minLength: 10
@@ -790,17 +925,31 @@ components:
           maxLength: 1024
           example: A quiet cozy and picturesque that hides behind a a river by the unique lightness of Amsterdam.
         city:
-          type: string
-          enum:
-            - Paris
-            - Cologne
-            - Brussels
-            - Amsterdam
-            - Hamburg
-            - Dusseldorf
-          example: Amsterdam
+          type: object
+          properties:
+            name:
+              type: string
+              enum:
+                - Paris
+                - Cologne
+                - Brussels
+                - Amsterdam
+                - Hamburg
+                - Dusseldorf
+              example: Amsterdam
+            longitude:
+              type: number
+              example: 24.3434
+            latitude:
+              type: number
+              example: 23.4522
+          required:
+            - name
+            - latitude
+            - longitude
         previewImage:
           type: string
+          format: binary
           example: preview-img/1.png
         images:
           type: array
@@ -833,31 +982,173 @@ components:
             - hotel
           example: apartment
         bedrooms:
-          type: number
+          type: integer
           minimum: 1
           maximum: 8
           example: 3
         maxAdults:
-          type: number
+          type: integer
           example: 4
           minimum: 1
           maximum: 10
         price:
-          type: number
+          type: integer
           minimum: 100
           maximum: 100000
           example: 120
         goods:
           type: array
-          enum:
-            - Breakfast
-            - Air conditioning
-            - Laptop
-            - Friendly workspace
-            - Baby seat
+          items:
+            type: string
+            enum:
+              - Breakfast
+              - Air conditioning
+              - Laptop
+              - Friendly workspace
+              - Baby seat
+              - Washer
+              - Towels
+              - Fridge
+          minItems: 1
+          example:
+            - Heating
             - Washer
-            - Towels
-            - Fridge
+        location:
+          type: object
+          properties:
+            latitude:
+              type: number
+              example: 52.3551493
+            longitude:
+              type: number
+              example: 4.67387753
+          required:
+            - latitude
+            - longitude
+        advertiserId:
+          type: string
+          example: 3k43lkk4k3
+          readOnly: true
+      additionalProperties: false
+      required:
+        - title
+        - description
+        - city
+        - previewImage
+        - images
+        - isPremium
+        - isFavorite
+        - rating
+        - type
+        - bedrooms
+        - maxAdults
+        - price
+        - goods
+        - location
+        - advertiserId
+
+
+    UpdateRentOfferRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 3jjk4343
+        title:
+          type: string
+          minLength: 10
+          maxLength: 100
+          example: Beautiful & luxurious studio at great location
+        description:
+          type: string
+          minLength: 20
+          maxLength: 1024
+          example: A quiet cozy and picturesque that hides behind a a river by the unique lightness of Amsterdam.
+        city:
+          type: object
+          properties:
+            name:
+              type: string
+              enum:
+                - Paris
+                - Cologne
+                - Brussels
+                - Amsterdam
+                - Hamburg
+                - Dusseldorf
+              example: Amsterdam
+            longitude:
+              type: number
+              example: 24.3434
+            latitude:
+              type: number
+              example: 23.4522
+          required:
+            - name
+            - latitude
+            - longitude
+        previewImage:
+          type: string
+          format: binary
+          example: preview-img/1.png
+        images:
+          type: array
+          items:
+            type: string
+            format: binary
+          minItems: 6
+          maxItems: 6
+          example:
+            - img/1.png
+            - img/2.png
+            - img/3.png
+        isPremium:
+          type: boolean
+          example: false
+        isFavorite:
+          type: boolean
+          example: true
+        rating:
+          type: number
+          minimum: 1
+          maximum: 5
+          example: 4.8
+        type:
+          type: string
+          enum:
+            - apartment
+            - house
+            - room
+            - hotel
+          example: apartment
+        bedrooms:
+          type: integer
+          minimum: 1
+          maximum: 8
+          example: 3
+        maxAdults:
+          type: integer
+          example: 4
+          minimum: 1
+          maximum: 10
+        price:
+          type: integer
+          minimum: 100
+          maximum: 100000
+          example: 120
+        goods:
+          type: array
+          items:
+            type: string
+            enum:
+              - Breakfast
+              - Air conditioning
+              - Laptop
+              - Friendly workspace
+              - Baby seat
+              - Washer
+              - Towels
+              - Fridge
           minItems: 1
           example:
             - Heating
@@ -874,66 +1165,32 @@ components:
           required:
             - latitude
             - longitude
-        advertiser:
-          type: object
-          $ref: '#/components/schemas/Advertiser-Author'
+        advertiserId:
+          type: string
+          example: 3k43lkk4k3
           readOnly: true
       additionalProperties: false
-      minProperties: 14
+      required:
+        - id
 
 
-    RentOfferBasicInfo:
-      type: object
-      properties:
-        id:
-          type: number
-          example: 3452443
-        offerDate:
-          type: string
-          example: "2023-10-05T14:48:00.000Z"
-        commentsCount:
-          type: number
-          example: 50
-        title:
-          type: string
-          example: Beautiful & luxurious studio at great location
-        city:
-          type: string
-          example: Amsterdam
-        previewImage:
-          type: string
-          example: preview-img/1.png
-        isPremium:
-          type: boolean
-          example: false
-        isFavorite:
-          type: boolean
-          example: true
-        rating:
-          type: number
-          example: 4.8
-        type:
-          type: string
-          example: apartment
-        price:
-          type: number
-          example: 120
 
-    validationOfferErrorMessage:
+
+    ValidationOfferErrorMessage:
       type: object
       properties:
         errorMessage:
           type: string
           example: Невозможно создать/обновить предложение. Проверьте данные
 
-    offerNotFoundMessage:
+    OfferNotFoundMessage:
       type: object
       properties:
         errorMessage:
           type: string
           example: Предложение не найдено.
 
-    editOfferErrorMessage:
+    UpdateOfferErrorMessage:
       type: object
       properties:
         errorMessage:
@@ -942,7 +1199,36 @@ components:
 
 
     #  comment schemas
-    Comment:
+    NewCommentRequest:
+      type: object
+      properties:
+        text:
+          type: string
+          minLength: 5
+          maxLength: 1024
+          example: Some comment about this offer.
+        rating:
+          type: number
+          minimum: 1
+          maximum: 5
+          example: 3.2
+        offerId:
+          type: string
+          example: kl3k23
+          readOnly: true
+        authorId:
+          type: string
+          example: 3k2l3k2
+          readOnly: true
+      additionalProperties: false
+      required:
+        - offerId
+        - authorId
+        - text
+        - rating
+
+
+    CommentResponse:
       type: object
       properties:
         id:
@@ -951,8 +1237,6 @@ components:
           readOnly: true
         text:
           type: string
-          minLength: 5
-          maxLength: 1024
           example: Some comment about this offer.
         pubDate:
           type: string
@@ -961,26 +1245,23 @@ components:
           readOnly: true
         rating:
           type: number
-          minimum: 1
-          maximum: 5
+          example: 3.2
+        offerId:
+          type: string
+          example: 3k2l3k2
+          readOnly: true
         author:
           type: object
           readOnly: true
           $ref: '#/components/schemas/Advertiser-Author'
 
-      required:
-        - text
-        - rating
 
-
-    validationCommentErrorMessage:
+    ValidationCommentErrorMessage:
       type: object
       properties:
         errorMessage:
           type: string
           example: Невозможно создать комментарий. Проверьте данные
-
-
   securitySchemes:
     tokenAuth:
       type: apiKey

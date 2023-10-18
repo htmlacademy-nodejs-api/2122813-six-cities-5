@@ -21,6 +21,8 @@ export default class RestApplication {
   }
 
   private async _initDb(): Promise<void> {
+    this.logger.info('Init database...');
+
     const mongoUri = getMongoURI(
       this.config.get('DB_USER'),
       this.config.get('DB_PASSWORD'),
@@ -29,7 +31,9 @@ export default class RestApplication {
       this.config.get('DB_NAME')
     );
 
-    return this.databaseClient.connect(mongoUri);
+    await this.databaseClient.connect(mongoUri);
+
+    this.logger.info('Init database completed');
   }
 
   private async _initServer() {
@@ -41,12 +45,19 @@ export default class RestApplication {
     this.logger.info(`Server started on http://localhost:${port}`);
   }
 
+  private async _initMiddleware() {
+    this.logger.info('Global middleware initialization...');
+
+    this.expressApplication.use(express.json());
+
+    this.logger.info('Global middleware initialization completed');
+  }
+
   public async init() {
     this.logger.info('Application initialization...');
-    this.logger.info(`Get value from env PORT: ${this.config.get('EXPRESS_PORT')}`);
-    this.logger.info('Init database...');
+
     await this._initDb();
-    this.logger.info('Init database completed');
+    await this._initMiddleware();
     await this._initServer();
   }
 }

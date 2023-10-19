@@ -30,7 +30,7 @@ export class UserEntity extends defaultClasses.TimeStamps implements User {
   @prop({required: true, type: () => String, enum: UserStatus})
   public status!: UserStatus;
 
-  @prop({required: true, ref: () => RentOfferEntity, _id: false, default: [], type: () => [String]})
+  @prop({required: true, ref: () => RentOfferEntity, _id: false, default: [], type: () => [RentOfferEntity]})
   public favorites!: Ref<RentOfferEntity>[];
 
   @prop({required: true})

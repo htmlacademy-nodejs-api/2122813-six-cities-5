@@ -1,0 +1,78 @@
+#Предложения
+## Создание нового предложения
+POST http://localhost:4000/rent-offers HTTP/1.1
+X-token: 'somesupertoken'
+Content-Type: application/json
+
+{
+  "title": "title",
+  "description": "long description",
+  "city": {
+        "name": "Amsterdam",
+        "latitude": 52.370216,
+        "longitude": 4.895168
+  },
+  "previewImage": "preview.jpg",
+  "images": [
+        "offer-image-7.jpg",
+        "offer-image-6.jpg",
+        "offer-image-1.jpg",
+        "offer-image-2.jpg",
+        "offer-image-4.jpg",
+        "offer-image-8.jpg"
+  ],
+  "isPremium": true,
+  "isFavorite": true,
+  "rating": 3.7,
+  "type": "hotel",
+  "bedrooms": 5,
+  "maxAdults": 3,
+  "price": 48410,
+  "goods": [
+        "Washer",
+        "Laptop"
+  ],
+  "advertiserId": "64760b2a6a803a09ab8e9a2f",
+  "location": {
+      "latitude": 50.837557,
+      "longitude": 4.351697
+  }
+}
+
+###
+
+## Получить список предложений
+GET http://localhost:4000/rent-offers HTTP/1.1
+
+###
+
+## Получить список премиальных предложений города
+GET http://localhost:4000/rent-offers/premium?city=Amsterdam HTTP/1.1
+
+###
+
+## Получить всю информацию о предложении
+GET http://localhost:4000/rent-offers/64760b2a6a803a09ab8e9a31 HTTP/1.1
+
+###
+
+## Обновить информацию о предложении
+PUT http://localhost:4000/rent-offers/64760b2a6a803a09ab8e9a31 HTTP/1.1
+X-token: 'somesupertoken'
+Content-Type: application/json
+
+{
+  "isPremium" : false,
+  "bedrooms" : 2,
+  "goods" : [
+    "Laptop"
+  ]
+}
+
+###
+
+## Удалить предложение
+DELETE http://localhost:4000/rent-offers/64760b2a6a803a09ab8e9a31 HTTP/1.1
+X-token: 'somesupertoken'
+
+###

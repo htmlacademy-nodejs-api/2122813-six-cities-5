@@ -7,6 +7,7 @@ import { DatabaseClientInterface } from '../core/datdbase-client/database-client
 import { RestSchema } from '../core/config/rest.schema.js';
 import { AppComponent } from '../types/app-component.type.js';
 import { getMongoURI } from '../core/utils/db-helper.js';
+import { ControllerInterface } from '../core/controller/controller.interface.js';
 
 @injectable()
 export default class RestApplication {
@@ -15,7 +16,8 @@ export default class RestApplication {
   constructor(
     @inject(AppComponent.LoggerInterface) private readonly logger: LoggerInterface,
     @inject(AppComponent.ConfigInterface) private readonly config: ConfigInterface<RestSchema>,
-    @inject(AppComponent.DatabaseClientInterface) private readonly databaseClient: DatabaseClientInterface
+    @inject(AppComponent.DatabaseClientInterface) private readonly databaseClient: DatabaseClientInterface,
+    @inject(AppComponent.RentOfferController) private readonly rentOfferController: ControllerInterface,
   ) {
     this.expressApplication = express();
   }
@@ -45,6 +47,14 @@ export default class RestApplication {
     this.logger.info(`Server started on http://localhost:${port}`);
   }
 
+  private async _initRoutes() {
+    this.logger.info('Controller initialization...');
+
+    this.expressApplication.use('/rent-offers', this.rentOfferController.router);
+
+    this.logger.info('Controller initialization completed');
+  }
+
   private async _initMiddleware() {
     this.logger.info('Global middleware initialization...');
 
@@ -58,6 +68,7 @@ export default class RestApplication {
 
     await this._initDb();
     await this._initMiddleware();
+    await this._initRoutes();
     await this._initServer();
   }
 }

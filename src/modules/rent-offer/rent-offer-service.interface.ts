@@ -3,7 +3,6 @@ import {DocumentType} from '@typegoose/typegoose';
 import { RentOfferEntity } from './rent-offer.entity.js';
 import CreateRentOfferDto from './dto/create-rent-offer.dto.js';
 import UpdateRentOfferDto from './dto/update-rent-offer.dto.js';
-import { CityName } from '../../types/city.type.js';
 
 export interface RentOfferServiceInterface {
   create(dto: CreateRentOfferDto): Promise<DocumentType<RentOfferEntity>>;
@@ -16,7 +15,7 @@ export interface RentOfferServiceInterface {
 
   deleteById(offerId: string): Promise<DocumentType<RentOfferEntity> | null>;
 
-  findPremium(city: CityName): Promise<DocumentType<RentOfferEntity>[]>
+  findPremium(city: string): Promise<DocumentType<RentOfferEntity>[]>
 
   incCommentCount(offerId: string): Promise<DocumentType<RentOfferEntity> | null>;
 }

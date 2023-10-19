@@ -8,6 +8,7 @@ import { RestSchema } from '../core/config/rest.schema.js';
 import { AppComponent } from '../types/app-component.type.js';
 import { getMongoURI } from '../core/utils/db-helper.js';
 import { ControllerInterface } from '../core/controller/controller.interface.js';
+import { ExceptionFilterInterface } from '../core/exception-filters/exception-filter.interface.js';
 
 @injectable()
 export default class RestApplication {
@@ -19,6 +20,7 @@ export default class RestApplication {
     @inject(AppComponent.DatabaseClientInterface) private readonly databaseClient: DatabaseClientInterface,
     @inject(AppComponent.RentOfferController) private readonly rentOfferController: ControllerInterface,
     @inject(AppComponent.UserController) private readonly userController: ControllerInterface,
+    @inject(AppComponent.ExceptionFilterInterface) private readonly exceptionFilter: ExceptionFilterInterface
   ) {
     this.expressApplication = express();
   }
@@ -65,12 +67,21 @@ export default class RestApplication {
     this.logger.info('Global middleware initialization completed');
   }
 
+  private async _initExceptionFilters() {
+    this.logger.info('Exception filters initialization');
+
+    this.expressApplication.use(this.exceptionFilter.catch.bind(this.exceptionFilter));
+
+    this.logger.info('Exception filters completed');
+  }
+
   public async init() {
     this.logger.info('Application initialization...');
 
     await this._initDb();
     await this._initMiddleware();
     await this._initRoutes();
+    await this._initExceptionFilters();
     await this._initServer();
   }
 }

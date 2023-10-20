@@ -126,7 +126,7 @@ export default class UserController extends Controller {
       );
     }
 
-    const existOffer = await this.rentOfferService.findById(offerId);
+    const existOffer = await this.rentOfferService.findById(offerId, false);
     if (!existOffer) {
       throw new HttpError(
         StatusCodes.CONFLICT,

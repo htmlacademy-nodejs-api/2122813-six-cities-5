@@ -22,8 +22,6 @@ Content-Type: application/json
         "offer-image-8.jpg"
   ],
   "isPremium": true,
-  "isFavorite": true,
-  "rating": 3.7,
   "type": "hotel",
   "bedrooms": 5,
   "maxAdults": 3,
@@ -47,17 +45,17 @@ GET http://localhost:4000/rent-offers HTTP/1.1
 ###
 
 ## Получить список премиальных предложений города
-GET http://localhost:4000/rent-offers/premium?city=Amsterdam HTTP/1.1
+GET http://localhost:4000/rent-offers/premium?city=Paris HTTP/1.1
 
 ###
 
 ## Получить всю информацию о предложении
-GET http://localhost:4000/rent-offers/64760b2a6a803a09ab8e9a31 HTTP/1.1
+GET http://localhost:4000/rent-offers/6487275952b1fd03b2bbcca6 HTTP/1.1
 
 ###
 
 ## Обновить информацию о предложении
-PUT http://localhost:4000/rent-offers/64760b2a6a803a09ab8e9a31 HTTP/1.1
+PATCH http://localhost:4000/rent-offers/6487275652b1fd03b2bbcca3 HTTP/1.1
 X-token: 'somesupertoken'
 Content-Type: application/json
 

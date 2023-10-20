@@ -63,6 +63,6 @@ export default class UserService implements UserServiceInterface {
   }
 
   public async changeFavoriteStatus(userId: string, offerId: string, status: boolean): Promise<DocumentType<UserEntity> | null> {
-    return this.userModel.findByIdAndUpdate(userId, {[`${status ? '$push' : '$pull'}`]: { favorites: offerId }}, {new: true}).exec();
+    return this.userModel.findByIdAndUpdate(userId, {[`${status ? '$addToSet' : '$pull'}`]: { favorites: offerId }}, {new: true}).exec();
   }
 }

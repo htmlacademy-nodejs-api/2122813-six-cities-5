@@ -7,15 +7,15 @@ import UpdateRentOfferDto from './dto/update-rent-offer.dto.js';
 export interface RentOfferServiceInterface {
   create(dto: CreateRentOfferDto): Promise<DocumentType<RentOfferEntity>>;
 
-  findById(offerId: string): Promise<DocumentType<RentOfferEntity> | null>;
+  findById(offerId: string, isFavorite: boolean): Promise<DocumentType<RentOfferEntity> | null>;
 
-  find(count?: number): Promise<DocumentType<RentOfferEntity>[]>;
+  find(count: number, userId?: string): Promise<DocumentType<RentOfferEntity>[]>;
 
   updateById(offerId: string, dto: UpdateRentOfferDto): Promise<DocumentType<RentOfferEntity> | null>;
 
   deleteById(offerId: string): Promise<DocumentType<RentOfferEntity> | null>;
 
-  findPremium(city: string): Promise<DocumentType<RentOfferEntity>[]>
+  findPremium(city: string, offersCount: number, userId?: string): Promise<DocumentType<RentOfferEntity>[]>
 
   incCommentCount(offerId: string): Promise<DocumentType<RentOfferEntity> | null>;
 }

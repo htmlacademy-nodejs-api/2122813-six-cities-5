@@ -35,7 +35,7 @@ export class RentOfferFullRDO {
   @Expose()
   public description!: string;
 
-  @Expose()
+  @Expose({name: 'createdAt'})
   @Type(() => Date)
   public offerDate!: Date;
 

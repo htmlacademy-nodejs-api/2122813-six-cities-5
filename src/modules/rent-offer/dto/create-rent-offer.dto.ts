@@ -10,7 +10,6 @@ export default class CreateRentOfferDto {
   public city!: City;
   public previewImage!: string;
   public images!: string[];
-  public isPremium!: boolean;
   public rating!: number;
   public type!: OfferType;
   public bedrooms!: number;

@@ -4,7 +4,7 @@ import validator from 'convict-format-with-validator';
 convict.addFormats(validator);
 
 export type RestSchema = {
-  PORT: number;
+  EXPRESS_PORT: number;
   SALT: string;
   DB_HOST: string;
   DB_USER: string;
@@ -14,10 +14,10 @@ export type RestSchema = {
 }
 
 export const configRestSchema = convict<RestSchema>({
-  PORT: {
+  EXPRESS_PORT: {
     doc: 'Port for incoming connections',
     format: 'port',
-    env: 'PORT',
+    env: 'EXPRESS_PORT',
     default: 4000
   },
   SALT: {

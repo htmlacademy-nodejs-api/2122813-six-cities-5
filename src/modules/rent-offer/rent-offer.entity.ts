@@ -43,8 +43,8 @@ export class RentOfferEntity extends defaultClasses.TimeStamps {
   @prop({required: true, trim: true})
   public description!: string;
 
-  @prop({required: true})
-  public offerDate!: Date;
+  @prop()
+  public offerDate?: Date;
 
   @prop({required: true, _id: false})
   public city!: City;
@@ -58,10 +58,10 @@ export class RentOfferEntity extends defaultClasses.TimeStamps {
   @prop({required: true})
   public isPremium!: boolean;
 
-  @prop({required: true})
-  public isFavorite!: boolean;
+  @prop()
+  public isFavorite?: boolean;
 
-  @prop({required: true})
+  @prop({default: 0})
   public rating!: number;
 
   @prop({required: true, type: () => String, enum: OfferType })
@@ -83,7 +83,7 @@ export class RentOfferEntity extends defaultClasses.TimeStamps {
   public advertiserId!: Ref<UserEntity>;
 
   @prop({default: 0})
-  public commentCount!: number;
+  public commentsCount!: number;
 
   @prop({required: true, _id: false})
   public location!: Location;

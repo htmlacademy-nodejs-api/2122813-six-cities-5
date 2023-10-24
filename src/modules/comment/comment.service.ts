@@ -22,7 +22,8 @@ export default class CommentService implements CommentServiceInterface {
   public async findByOfferId(offerId: string): Promise<DocumentType<CommentEntity>[]> {
     const limit = MAX_COMMENTS_COUNT;
     return this.commentModel
-      .find({offerId}, {}, {limit})
+      .find({offerId})
+      .limit(limit)
       .sort({createdAt: SortType.Down})
       .populate('authorId')
       .exec();

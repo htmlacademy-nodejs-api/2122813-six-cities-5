@@ -5,9 +5,11 @@ import CreateRentOfferDto from './dto/create-rent-offer.dto.js';
 import UpdateRentOfferDto from './dto/update-rent-offer.dto.js';
 
 export interface RentOfferServiceInterface {
+  exists(offerId: string): Promise<unknown>;
+
   create(dto: CreateRentOfferDto): Promise<DocumentType<RentOfferEntity>>;
 
-  findById(offerId: string, isFavorite: boolean): Promise<DocumentType<RentOfferEntity> | null>;
+  findById(offerId: string, userId?: string): Promise<DocumentType<RentOfferEntity> | null>;
 
   find(count: number, userId?: string): Promise<DocumentType<RentOfferEntity>[]>;
 

@@ -1,0 +1,14 @@
+#Комментарии
+##Создание нового комментария
+POST http://localhost:4000/comments HTTP/1.1
+X-token: 'somesupertoken'
+Content-Type: application/json
+
+{
+  "text": "Тестовый коммеентарий",
+  "rating": "4.3",
+  "offerId": "6487275352b1fd03b2bbcca0",
+  "authorId": "64760b2a6a803a09ab8e9a34"
+}
+
+###

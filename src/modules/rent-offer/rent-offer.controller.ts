@@ -1,7 +1,6 @@
 import { inject, injectable } from 'inversify';
 import { Request, Response } from 'express';
 import * as core from 'express-serve-static-core';
-
 import { Controller } from '../../core/controller/controller.abstract.js';
 import { LoggerInterface } from '../../core/logger/logger.interface.js';
 import { AppComponent } from '../../types/app-component.type.js';
@@ -13,12 +12,13 @@ import RentOfferBasicRDO from '../rent-offer/rdo/rent-offer-basic.rdo.js';
 import { RentOfferFullRDO } from './rdo/rent-offer-full.rdo.js';
 import HttpError from '../../core/errors/http-error.js';
 import { DEFAULT_OFFERS_COUNT, MAX_PREMIUM_OFFERS_COUNT } from './rent-offer.constants.js';
-import UserService from '../user/user.service.js';
 import CreateRentOfferDto from './dto/create-rent-offer.dto.js';
+import CommentService from '../comment/comment.service.js';
+import CommentRDO from '../comment/rdo/comment.rdo.js';
+import { ValidateObjectIdMiddleware } from '../../core/middlewares/validate-id.middleware.js';
 
 type ParamsGetOffer = {
   offerId: string;
-  city?: string;
 }
 
 @injectable()
@@ -26,7 +26,7 @@ export default class RentOfferController extends Controller {
   constructor(
   @inject(AppComponent.LoggerInterface) logger: LoggerInterface,
   @inject(AppComponent.RentOfferServiceInterface) private readonly rentOfferService: RentOfferService,
-  @inject(AppComponent.UserServiceInterface) private readonly userService: UserService
+  @inject(AppComponent.CommentServiceInterface) private readonly commentService: CommentService
   ) {
     super(logger);
 
@@ -34,9 +34,30 @@ export default class RentOfferController extends Controller {
     this.addRoute({path: '/', method: HttpMethod.Post, handler: this.createOffer});
     this.addRoute({path: '/', method: HttpMethod.Get, handler: this.getOffers});
     this.addRoute({path: '/premium', method: HttpMethod.Get, handler: this.getPremiumOffers});
-    this.addRoute({path: '/:offerId', method: HttpMethod.Get, handler: this.getOfferDetails});
-    this.addRoute({path: '/:offerId', method: HttpMethod.Patch, handler: this.updateOffer});
-    this.addRoute({path: '/:offerId', method: HttpMethod.Delete, handler:this.deleteOffer});
+    this.addRoute({
+      path: '/:offerId',
+      method: HttpMethod.Get,
+      handler: this.getOfferDetails,
+      middlewares: [new ValidateObjectIdMiddleware('offerId')]
+    });
+    this.addRoute({
+      path: '/:offerId',
+      method: HttpMethod.Patch,
+      handler: this.updateOffer,
+      middlewares: [new ValidateObjectIdMiddleware('offerId')]
+    });
+    this.addRoute({
+      path: '/:offerId',
+      method: HttpMethod.Delete,
+      handler:this.deleteOffer,
+      middlewares: [new ValidateObjectIdMiddleware('offerId')]
+    });
+    this.addRoute({
+      path: '/:offerId/comments',
+      method: HttpMethod.Get,
+      handler: this.getComments,
+      middlewares: [new ValidateObjectIdMiddleware('offerId')]
+    });
   }
 
   public async createOffer(req: Request<Record<string, unknown>, Record<string, unknown>, CreateRentOfferDto>, res: Response): Promise<void> {
@@ -48,7 +69,6 @@ export default class RentOfferController extends Controller {
         'RestOfferController'
       );
     }
-
     const {body: requestOffer} = req;
     const newOffer = await this.rentOfferService.create(requestOffer);
     this.created(res, fillRDO(RentOfferFullRDO, newOffer));
@@ -58,7 +78,8 @@ export default class RentOfferController extends Controller {
     const {params: {count}} = req;
     const offersCount = count ? Number.parseInt(count, 10) : DEFAULT_OFFERS_COUNT;
 
-    const offers = await this.rentOfferService.find(offersCount);
+    const offers = await this.rentOfferService.find(offersCount, '64760b2a6a803a09ab8e9a34');
+    console.log(offers);
 
     const offersResponse = offers?.map((offer) => fillRDO(RentOfferBasicRDO, offer));
     this.ok(res, offersResponse);
@@ -73,9 +94,7 @@ export default class RentOfferController extends Controller {
         'RestOfferController'
       );
     }
-
     const premiumOffers = await this.rentOfferService.findPremium(city.toString(), MAX_PREMIUM_OFFERS_COUNT, '64760b2a6a803a09ab8e9a34');
-
     const offersResponse = premiumOffers?.map((offer) => fillRDO(RentOfferBasicRDO, offer));
     this.ok(res, offersResponse);
   }
@@ -90,11 +109,8 @@ export default class RentOfferController extends Controller {
       );
     }
 
-    const isFavorite = await this.userService
-      .findById('6487275952b1fd03b2bbcca6')
-      .then((user) => user ? user.favorites.map((offer) => offer.toString()).includes(offerId) : false);
 
-    const offer = await this.rentOfferService.findById(offerId, isFavorite);
+    const offer = await this.rentOfferService.findById(offerId, '64760b2a6a803a09ab8e9a34');
     this.ok(res, fillRDO(RentOfferFullRDO, offer));
   }
 
@@ -144,14 +160,31 @@ export default class RentOfferController extends Controller {
       );
     }
     const offer = await this.rentOfferService.deleteById(offerId);
+
     if (!offer) {
       throw new HttpError(
-        StatusCodes.NOT_FOUND,
-        `Offer with id ${offerId} not found.`,
+        StatusCodes.CONFLICT,
+        `Offer with such id ${offerId} not exists.`,
+        'OfferController'
+      );
+    }
+    await this.commentService.deleteByOfferId(offerId);
+
+    this.noContent(res, {message: 'Offer was deleted successfully.'});
+  }
+
+  public async getComments({params}: Request<core.ParamsDictionary | ParamsGetOffer>, res: Response): Promise<void> {
+
+    if (!await this.rentOfferService.exists(params.offerId)) {
+      throw new HttpError(
+        StatusCodes.CONFLICT,
+        `Offer with such id ${params.offerId} not exists.`,
         'OfferController'
       );
     }
 
-    this.noContent(res, {message: 'Offer was deleted successfully.'});
+    const comments = await this.commentService.findByOfferId(params.offerId);
+    this.ok(res, fillRDO(CommentRDO, comments));
+
   }
 }

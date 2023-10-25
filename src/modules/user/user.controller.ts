@@ -18,6 +18,8 @@ import HttpError from '../../core/errors/http-error.js';
 import { ValidateObjectIdMiddleware } from '../../core/middlewares/validate-id.middleware.js';
 import { ValidateDTOMiddleware } from '../../core/middlewares/validate-dto.middleware.js';
 import AuthUserDTO from './dto/auth-user.dto.js';
+import { DocumentExistsMiddleware } from '../../core/middlewares/document-exists.middleware.js';
+import { UploadFileMiddleware } from '../../core/middlewares/upload-file.middleware.js';
 
 @injectable()
 export default class UserController extends Controller {
@@ -49,19 +51,31 @@ export default class UserController extends Controller {
       path: '/:userId/avatar',
       method: HttpMethod.Put,
       handler: this.loadAvatar,
-      middlewares: [new ValidateObjectIdMiddleware('userId')]
+      middlewares: [
+        new ValidateObjectIdMiddleware('userId'),
+        new UploadFileMiddleware(this.configService.get('UPLOAD_DIRECTORY'), 'avatar'),
+        new DocumentExistsMiddleware(this.userService, 'User', 'userId')
+      ]
     });
     this.addRoute({
       path: '/:userId/favorites/',
       method: HttpMethod.Get,
       handler:this.getFavorites,
-      middlewares: [new ValidateObjectIdMiddleware('userId')]
+      middlewares: [
+        new ValidateObjectIdMiddleware('userId'),
+        new DocumentExistsMiddleware(this.userService, 'User', 'userId')
+      ]
     });
     this.addRoute({
       path: '/:userId/favorites/:offerId',
       method: HttpMethod.Put,
       handler:this.updateFavoriteStatus,
-      middlewares: [new ValidateObjectIdMiddleware('userId'), new ValidateObjectIdMiddleware('offerId')]
+      middlewares: [
+        new ValidateObjectIdMiddleware('userId'),
+        new ValidateObjectIdMiddleware('offerId'),
+        new DocumentExistsMiddleware(this.rentOfferService, 'Rent-offer', 'offerId'),
+        new DocumentExistsMiddleware(this.userService, 'User', 'userId')
+      ]
     });
   }
 
@@ -117,8 +131,10 @@ export default class UserController extends Controller {
     }
   }
 
-  public async loadAvatar(_req: Request, _res: Response): Promise<void> {
-    throw new Error('Ещё не реализован');
+  public async loadAvatar(req: Request, res: Response): Promise<void> {
+    this.created(res, {
+      filepath: req.file?.path
+    });
   }
 
   public async logout(req: Request, _res: Response): Promise<void> {
@@ -134,9 +150,8 @@ export default class UserController extends Controller {
   }
 
   public async updateFavoriteStatus(req: Request, res: Response): Promise<void> {
-    if(!Object.keys(req.params).includes('userId') ||
-      !Object.keys(req.params).includes('offerId') ||
-      !Object.keys(req.query).includes('isFav')) {
+
+    if(!Object.keys(req.query).includes('isFav')) {
       throw new HttpError(
         StatusCodes.BAD_REQUEST,
         'Incorrect path Error. Check your request',
@@ -146,37 +161,20 @@ export default class UserController extends Controller {
 
     const {params: {userId, offerId}, query: {isFav}} = req;
 
-    if (!userId || !offerId || !isFav) {
+    if (!isFav) {
       throw new HttpError(
         StatusCodes.BAD_REQUEST,
         'Incorrect path Error. Check your request',
-        'UserController'
-      );
-    }
-
-    const existOffer = await this.rentOfferService.findById(offerId);
-    if (!existOffer) {
-      throw new HttpError(
-        StatusCodes.CONFLICT,
-        'Offer with such id not found',
         'UserController'
       );
     }
 
     const status = Number.parseInt(isFav.toString(), 10) === 1;
-    const updateUser = await this.userService.changeFavoriteStatus(userId, existOffer.id, status);
+    const updateUser = await this.userService.changeFavoriteStatus(userId, offerId, status);
     this.send(res, 201, updateUser);
   }
 
   public async getFavorites(req: Request, res: Response): Promise<void> {
-    if(!Object.keys(req.params).includes('userId')) {
-      throw new HttpError(
-        StatusCodes.BAD_REQUEST,
-        'Incorrect path Error. Check your request',
-        'UserController'
-      );
-    }
-
     const {params: {userId}} = req;
 
     const existedUserFavorites = await this.userService.findUserFavorites(userId);

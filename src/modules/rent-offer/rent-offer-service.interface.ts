@@ -20,4 +20,6 @@ export interface RentOfferServiceInterface {
   findPremium(city: string, offersCount: number, userId?: string): Promise<DocumentType<RentOfferEntity>[]>
 
   incCommentCount(offerId: string): Promise<DocumentType<RentOfferEntity> | null>;
+
+  updateRating(offerId: string) : Promise<DocumentType<RentOfferEntity> | null>
 }

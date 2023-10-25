@@ -5,13 +5,9 @@ X-token: 'somesupertoken'
 Content-Type: application/json
 
 {
-  "title": "title",
-  "description": "long description",
-  "city": {
-        "name": "Amsterdam",
-        "latitude": 52.370216,
-        "longitude": 4.895168
-  },
+  "title": "validation test",
+  "description": "long description for validation testoffer",
+  "city": "Amsterdam",
   "previewImage": "preview.jpg",
   "images": [
         "offer-image-7.jpg",
@@ -31,34 +27,27 @@ Content-Type: application/json
         "Laptop"
   ],
   "advertiserId": "64760b2a6a803a09ab8e9a2f",
-  "location": {
-      "latitude": 50.837557,
-      "longitude": 4.351697
-  }
+  "latitude": 50.837557,
+  "longitude": 4.351697
 }
-
 ###
 
 ## Получить список предложений
 GET http://localhost:4000/rent-offers HTTP/1.1
-
 ###
 
 ## Получить список премиальных предложений города
-GET http://localhost:4000/rent-offers/premium?city=Amsterdam HTTP/1.1
-
+GET http://localhost:4000/rent-offers/premium?city=Paris HTTP/1.1
 ###
 
 ## Получить всю информацию о предложении
 GET http://localhost:4000/rent-offers/6487275952b1fd03b2bbcca6 HTTP/1.1
-
 ###
 
 ## Обновить информацию о предложении
 PATCH http://localhost:4000/rent-offers/6487275652b1fd03b2bbcca3 HTTP/1.1
 X-token: 'somesupertoken'
 Content-Type: application/json
-
 {
   "isPremium" : false,
   "bedrooms" : 2,
@@ -66,16 +55,13 @@ Content-Type: application/json
     "Laptop"
   ]
 }
-
 ###
 
 ## Удалить предложение
 DELETE http://localhost:4000/rent-offers/64760b2a6a803a09ab8e9a31 HTTP/1.1
 X-token: 'somesupertoken'
-
 ###
 
 ##Получить список комментариев к офферу
 GET http://localhost:4000/rent-offers/6487275352b1fd03b2bbcca0/comments HTTP/1.1
-
 ###

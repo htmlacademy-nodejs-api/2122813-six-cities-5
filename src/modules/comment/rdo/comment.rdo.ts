@@ -21,6 +21,9 @@ export default class CommentRDO {
   @Expose()
   public text!: string;
 
+  @Expose()
+  public rating!: number;
+
   @Expose({ name: 'createdAt'})
   @Type(() => Date)
   public postDate!: Date;

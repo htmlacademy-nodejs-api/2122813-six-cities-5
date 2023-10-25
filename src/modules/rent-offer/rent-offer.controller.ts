@@ -18,6 +18,7 @@ import CommentRDO from '../comment/rdo/comment.rdo.js';
 import { ValidateObjectIdMiddleware } from '../../core/middlewares/validate-id.middleware.js';
 import { ValidateDTOMiddleware } from '../../core/middlewares/validate-dto.middleware.js';
 import UpdateRentOfferDTO from './dto/update-rent-offer.dto.js';
+import { MAX_COMMENTS_COUNT } from '../comment/comment.constants.js';
 
 type ParamsGetOffer = {
   offerId: string;
@@ -193,7 +194,7 @@ export default class RentOfferController extends Controller {
       );
     }
 
-    const comments = await this.commentService.findByOfferId(params.offerId);
+    const comments = await this.commentService.findByOfferId(params.offerId, MAX_COMMENTS_COUNT);
     this.ok(res, fillRDO(CommentRDO, comments));
   }
 }

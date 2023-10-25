@@ -5,8 +5,8 @@ X-token: 'somesupertoken'
 Content-Type: application/json
 
 {
-  "text": "Тестовый коммеентарий",
-  "rating": "4.3",
+  "text": "Еще тестовый коммеентарий",
+  "rating": "4.1",
   "offerId": "65325655cef4c3c2a2d512a0",
   "authorId": "6539260b6e45398aae1dc1d1"
 }

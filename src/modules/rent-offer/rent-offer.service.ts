@@ -10,7 +10,6 @@ import { SortType } from '../../types/sort-order.type.js';
 
 @injectable()
 export default class RentOfferService implements RentOfferServiceInterface {
-
   constructor(
     @inject(AppComponent.LoggerInterface) private readonly logger: LoggerInterface,
     @inject(AppComponent.RentOfferModel) private readonly rentOfferModel: types.ModelType<RentOfferEntity>
@@ -21,14 +20,14 @@ export default class RentOfferService implements RentOfferServiceInterface {
       offer.isFavorite = false;
       return offer;
     });
-
     this.logger.info(`New offer created: ${dto.title}`);
-
     return rentOfferEntry.populate(['advertiserId']);
   }
 
   public async findById(offerId: string, userId?: string): Promise<DocumentType<RentOfferEntity> | null> {
+
     let result = await this.rentOfferModel.aggregate([
+      { $match: { $expr: { $eq: [offerId, { $toString: '$_id'}] } } },
       {
         $lookup: {
           from: 'users',
@@ -40,7 +39,6 @@ export default class RentOfferService implements RentOfferServiceInterface {
         }
       },
       { $unwind: { path: '$user', preserveNullAndEmptyArrays: true } },
-      { $match: { $expr: { $eq: [offerId, { $toString: '$_id'}] } } },
       {
         $addFields: {
           isFavorite: {
@@ -60,7 +58,6 @@ export default class RentOfferService implements RentOfferServiceInterface {
       },
       { $unset: 'user' },
     ]).exec();
-
     result = await this.rentOfferModel.populate(result, {path: 'advertiserId'});
     return result[0];
   }
@@ -127,7 +124,7 @@ export default class RentOfferService implements RentOfferServiceInterface {
           from: 'users',
           pipeline: [
             { $match: { $expr: {$eq: [userId, { $toString: '$_id'}] } } },
-            { $project: {_id: false, favorites: true}}
+            { $project: {_id: false, favorites: true}},
           ],
           as: 'user'
         }
@@ -160,6 +157,29 @@ export default class RentOfferService implements RentOfferServiceInterface {
     return this.rentOfferModel
       .findByIdAndUpdate(offerId, {'$inc': { commentsCount: 1 }})
       .exec();
+  }
+
+  public async updateRating(offerId: string): Promise<DocumentType<RentOfferEntity> | null> {
+    const result = await this.rentOfferModel.aggregate([
+      { $match: { $expr: { $eq: [offerId, { $toString: '$_id'}] } } },
+      {
+        $lookup: {
+          from: 'comments',
+          let: { commentsCount: '$commentsCount'},
+          pipeline: [
+            { $match: { $expr: { $eq: [offerId, { $toString: '$offerId'}] } } },
+            { $group: {_id: null, rating: {$sum: '$rating'} } },
+            { $project: {_id: false, rating: {$divide: ['$rating', '$$commentsCount']}}}
+          ],
+          as: 'commentsRatings'
+        }
+      },
+      { $unwind: { path: '$commentsRatings' } },
+      { $project: {_id: false, commentsRatings: true}}
+    ]).exec().then((res) => res[0].commentsRatings.rating);
+
+    const newRating = result.toFixed(1);
+    return this.rentOfferModel.findByIdAndUpdate(offerId, {'$set': { rating: newRating}});
   }
 
   public async exists(offerId: string): Promise<boolean> {

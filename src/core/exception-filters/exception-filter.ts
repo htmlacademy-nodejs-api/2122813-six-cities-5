@@ -25,8 +25,8 @@ export default class ExceptionFilter implements ExceptionFilterInterface {
   }
 
   private handleOtherError(error: Error, _req: Request, res: Response, _next: NextFunction) {
-    const { message } = error;
-    this.logger.error(message);
+    const { message, name } = error;
+    this.logger.error(`${name}: ${message}`);
     res
       .status(StatusCodes.INTERNAL_SERVER_ERROR)
       .json(createErrorObject(message));

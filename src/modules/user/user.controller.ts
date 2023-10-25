@@ -19,6 +19,7 @@ import { ValidateObjectIdMiddleware } from '../../core/middlewares/validate-id.m
 import { ValidateDTOMiddleware } from '../../core/middlewares/validate-dto.middleware.js';
 import AuthUserDTO from './dto/auth-user.dto.js';
 import { DocumentExistsMiddleware } from '../../core/middlewares/document-exists.middleware.js';
+import { UploadFileMiddleware } from '../../core/middlewares/upload-file.middleware.js';
 
 @injectable()
 export default class UserController extends Controller {
@@ -52,7 +53,8 @@ export default class UserController extends Controller {
       handler: this.loadAvatar,
       middlewares: [
         new ValidateObjectIdMiddleware('userId'),
-        new DocumentExistsMiddleware(this.userService, 'User', 'userId'),
+        new UploadFileMiddleware(this.configService.get('UPLOAD_DIRECTORY'), 'avatar'),
+        new DocumentExistsMiddleware(this.userService, 'User', 'userId')
       ]
     });
     this.addRoute({
@@ -129,8 +131,10 @@ export default class UserController extends Controller {
     }
   }
 
-  public async loadAvatar(_req: Request, _res: Response): Promise<void> {
-    throw new Error('Ещё не реализован');
+  public async loadAvatar(req: Request, res: Response): Promise<void> {
+    this.created(res, {
+      filepath: req.file?.path
+    });
   }
 
   public async logout(req: Request, _res: Response): Promise<void> {
@@ -146,9 +150,8 @@ export default class UserController extends Controller {
   }
 
   public async updateFavoriteStatus(req: Request, res: Response): Promise<void> {
-    if(!Object.keys(req.params).includes('userId') ||
-      !Object.keys(req.params).includes('offerId') ||
-      !Object.keys(req.query).includes('isFav')) {
+
+    if(!Object.keys(req.query).includes('isFav')) {
       throw new HttpError(
         StatusCodes.BAD_REQUEST,
         'Incorrect path Error. Check your request',
@@ -158,7 +161,7 @@ export default class UserController extends Controller {
 
     const {params: {userId, offerId}, query: {isFav}} = req;
 
-    if (!userId || !offerId || !isFav) {
+    if (!isFav) {
       throw new HttpError(
         StatusCodes.BAD_REQUEST,
         'Incorrect path Error. Check your request',

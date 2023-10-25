@@ -34,7 +34,7 @@ X-token: 'somesupertoken'
 ###
 
 ## Добавление предложения в избранное
-PUT http://localhost:4000/users/64760b2a6a803a09ab8e9a34/favorites/64760b2a6a803a09ab8e9a36?isFav=1 HTTP/1.1
+PUT http://localhost:4000/users/64760b2a6a803a09ab8e9a34/favorites/6487271d52b1fd03b2bbcc9d?isFav=1 HTTP/1.1
 
 ###
 

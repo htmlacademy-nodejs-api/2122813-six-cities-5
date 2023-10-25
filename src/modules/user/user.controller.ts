@@ -15,6 +15,9 @@ import RentOfferService from '../rent-offer/rent-offer.service.js';
 import RentOfferBasicRDO from '../rent-offer/rdo/rent-offer-basic.rdo.js';
 import CreateUserDTO from './dto/create-user.dto.js';
 import HttpError from '../../core/errors/http-error.js';
+import { ValidateObjectIdMiddleware } from '../../core/middlewares/validate-id.middleware.js';
+import { ValidateDTOMiddleware } from '../../core/middlewares/validate-dto.middleware.js';
+import AuthUserDTO from './dto/auth-user.dto.js';
 
 @injectable()
 export default class UserController extends Controller {
@@ -28,13 +31,38 @@ export default class UserController extends Controller {
 
     this.logger.info('Register routes for User Controller…');
 
-    this.addRoute({path: '/register', method: HttpMethod.Post, handler: this.register});
+    this.addRoute({
+      path: '/register',
+      method: HttpMethod.Post,
+      handler: this.register,
+      middlewares: [new ValidateDTOMiddleware(CreateUserDTO)]
+    });
     this.addRoute({path: '/auth', method: HttpMethod.Get, handler: this.checkAuth});
-    this.addRoute({path: '/auth', method: HttpMethod.Post, handler: this.requestAuth});
+    this.addRoute({
+      path: '/auth',
+      method: HttpMethod.Post,
+      handler: this.requestAuth,
+      middlewares: [new ValidateDTOMiddleware(AuthUserDTO)]
+    });
     this.addRoute({path: '/logout', method: HttpMethod.Delete, handler: this.logout});
-    this.addRoute({path: '/:userId/avatar', method: HttpMethod.Put, handler: this.loadAvatar});
-    this.addRoute({path: '/:userId/favorites/:offerId', method: HttpMethod.Put, handler:this.updateFavoriteStatus});
-    this.addRoute({path: '/:userId/favorites/', method: HttpMethod.Get, handler:this.getFavorites});
+    this.addRoute({
+      path: '/:userId/avatar',
+      method: HttpMethod.Put,
+      handler: this.loadAvatar,
+      middlewares: [new ValidateObjectIdMiddleware('userId')]
+    });
+    this.addRoute({
+      path: '/:userId/favorites/',
+      method: HttpMethod.Get,
+      handler:this.getFavorites,
+      middlewares: [new ValidateObjectIdMiddleware('userId')]
+    });
+    this.addRoute({
+      path: '/:userId/favorites/:offerId',
+      method: HttpMethod.Put,
+      handler:this.updateFavoriteStatus,
+      middlewares: [new ValidateObjectIdMiddleware('userId'), new ValidateObjectIdMiddleware('offerId')]
+    });
   }
 
   public async register(req: Request<Record<string, unknown>, Record<string, unknown>, CreateUserDTO>, res: Response): Promise<void> {
@@ -126,7 +154,7 @@ export default class UserController extends Controller {
       );
     }
 
-    const existOffer = await this.rentOfferService.findById(offerId, false);
+    const existOffer = await this.rentOfferService.findById(offerId);
     if (!existOffer) {
       throw new HttpError(
         StatusCodes.CONFLICT,

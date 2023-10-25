@@ -16,6 +16,8 @@ import RentOfferBasicRDO from '../rent-offer/rdo/rent-offer-basic.rdo.js';
 import CreateUserDTO from './dto/create-user.dto.js';
 import HttpError from '../../core/errors/http-error.js';
 import { ValidateObjectIdMiddleware } from '../../core/middlewares/validate-id.middleware.js';
+import { ValidateDTOMiddleware } from '../../core/middlewares/validate-dto.middleware.js';
+import AuthUserDTO from './dto/auth-user.dto.js';
 
 @injectable()
 export default class UserController extends Controller {
@@ -29,9 +31,19 @@ export default class UserController extends Controller {
 
     this.logger.info('Register routes for User Controller…');
 
-    this.addRoute({path: '/register', method: HttpMethod.Post, handler: this.register});
+    this.addRoute({
+      path: '/register',
+      method: HttpMethod.Post,
+      handler: this.register,
+      middlewares: [new ValidateDTOMiddleware(CreateUserDTO)]
+    });
     this.addRoute({path: '/auth', method: HttpMethod.Get, handler: this.checkAuth});
-    this.addRoute({path: '/auth', method: HttpMethod.Post, handler: this.requestAuth});
+    this.addRoute({
+      path: '/auth',
+      method: HttpMethod.Post,
+      handler: this.requestAuth,
+      middlewares: [new ValidateDTOMiddleware(AuthUserDTO)]
+    });
     this.addRoute({path: '/logout', method: HttpMethod.Delete, handler: this.logout});
     this.addRoute({
       path: '/:userId/avatar',

@@ -12,10 +12,12 @@ import RentOfferBasicRDO from '../rent-offer/rdo/rent-offer-basic.rdo.js';
 import { RentOfferFullRDO } from './rdo/rent-offer-full.rdo.js';
 import HttpError from '../../core/errors/http-error.js';
 import { DEFAULT_OFFERS_COUNT, MAX_PREMIUM_OFFERS_COUNT } from './rent-offer.constants.js';
-import CreateRentOfferDto from './dto/create-rent-offer.dto.js';
+import CreateRentOfferDTO from './dto/create-rent-offer.dto.js';
 import CommentService from '../comment/comment.service.js';
 import CommentRDO from '../comment/rdo/comment.rdo.js';
 import { ValidateObjectIdMiddleware } from '../../core/middlewares/validate-id.middleware.js';
+import { ValidateDTOMiddleware } from '../../core/middlewares/validate-dto.middleware.js';
+import UpdateRentOfferDTO from './dto/update-rent-offer.dto.js';
 
 type ParamsGetOffer = {
   offerId: string;
@@ -31,7 +33,12 @@ export default class RentOfferController extends Controller {
     super(logger);
 
     this.logger.info('Register routes for Rent Offer Controller…');
-    this.addRoute({path: '/', method: HttpMethod.Post, handler: this.createOffer});
+    this.addRoute({
+      path: '/',
+      method: HttpMethod.Post,
+      handler: this.createOffer,
+      middlewares: [new ValidateDTOMiddleware(CreateRentOfferDTO)]
+    });
     this.addRoute({path: '/', method: HttpMethod.Get, handler: this.getOffers});
     this.addRoute({path: '/premium', method: HttpMethod.Get, handler: this.getPremiumOffers});
     this.addRoute({
@@ -44,7 +51,10 @@ export default class RentOfferController extends Controller {
       path: '/:offerId',
       method: HttpMethod.Patch,
       handler: this.updateOffer,
-      middlewares: [new ValidateObjectIdMiddleware('offerId')]
+      middlewares: [
+        new ValidateObjectIdMiddleware('offerId'),
+        new ValidateDTOMiddleware(UpdateRentOfferDTO)
+      ]
     });
     this.addRoute({
       path: '/:offerId',
@@ -60,7 +70,7 @@ export default class RentOfferController extends Controller {
     });
   }
 
-  public async createOffer(req: Request<Record<string, unknown>, Record<string, unknown>, CreateRentOfferDto>, res: Response): Promise<void> {
+  public async createOffer(req: Request<Record<string, unknown>, Record<string, unknown>, CreateRentOfferDTO>, res: Response): Promise<void> {
     const reqToken = req.get('X-token');
     if (!reqToken) {
       throw new HttpError(
@@ -185,6 +195,5 @@ export default class RentOfferController extends Controller {
 
     const comments = await this.commentService.findByOfferId(params.offerId);
     this.ok(res, fillRDO(CommentRDO, comments));
-
   }
 }

@@ -4,8 +4,8 @@ import { RentOfferServiceInterface } from './rent-offer-service.interface.js';
 import { AppComponent } from '../../types/app-component.type.js';
 import { LoggerInterface } from '../../core/logger/logger.interface.js';
 import { RentOfferEntity } from './rent-offer.entity.js';
-import CreateRentOfferDto from './dto/create-rent-offer.dto.js';
-import UpdateRentOfferDto from './dto/update-rent-offer.dto.js';
+import CreateRentOfferDTO from './dto/create-rent-offer.dto.js';
+import UpdateRentOfferDTO from './dto/update-rent-offer.dto.js';
 import { SortType } from '../../types/sort-order.type.js';
 
 @injectable()
@@ -16,7 +16,7 @@ export default class RentOfferService implements RentOfferServiceInterface {
     @inject(AppComponent.RentOfferModel) private readonly rentOfferModel: types.ModelType<RentOfferEntity>
   ) {}
 
-  public async create(dto: CreateRentOfferDto): Promise<DocumentType<RentOfferEntity>> {
+  public async create(dto: CreateRentOfferDTO): Promise<DocumentType<RentOfferEntity>> {
     const rentOfferEntry = await this.rentOfferModel.create(dto).then((offer) => {
       offer.isFavorite = false;
       return offer;
@@ -101,7 +101,7 @@ export default class RentOfferService implements RentOfferServiceInterface {
     ]).exec();
   }
 
-  public async updateById(offerId: string, dto: UpdateRentOfferDto): Promise<DocumentType<RentOfferEntity> | null> {
+  public async updateById(offerId: string, dto: UpdateRentOfferDTO): Promise<DocumentType<RentOfferEntity> | null> {
     await this.rentOfferModel.findByIdAndUpdate(offerId, dto);
     return this.findById(offerId);
   }

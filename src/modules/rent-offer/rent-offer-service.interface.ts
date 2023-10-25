@@ -1,19 +1,19 @@
 import {DocumentType} from '@typegoose/typegoose';
 
 import { RentOfferEntity } from './rent-offer.entity.js';
-import CreateRentOfferDto from './dto/create-rent-offer.dto.js';
-import UpdateRentOfferDto from './dto/update-rent-offer.dto.js';
+import CreateRentOfferDTO from './dto/create-rent-offer.dto.js';
+import UpdateRentOfferDTO from './dto/update-rent-offer.dto.js';
 
 export interface RentOfferServiceInterface {
   exists(offerId: string): Promise<unknown>;
 
-  create(dto: CreateRentOfferDto): Promise<DocumentType<RentOfferEntity>>;
+  create(dto: CreateRentOfferDTO): Promise<DocumentType<RentOfferEntity>>;
 
   findById(offerId: string, userId?: string): Promise<DocumentType<RentOfferEntity> | null>;
 
   find(count: number, userId?: string): Promise<DocumentType<RentOfferEntity>[]>;
 
-  updateById(offerId: string, dto: UpdateRentOfferDto): Promise<DocumentType<RentOfferEntity> | null>;
+  updateById(offerId: string, dto: UpdateRentOfferDTO): Promise<DocumentType<RentOfferEntity> | null>;
 
   deleteById(offerId: string): Promise<DocumentType<RentOfferEntity> | null>;
 

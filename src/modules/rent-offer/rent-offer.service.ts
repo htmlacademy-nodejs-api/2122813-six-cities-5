@@ -98,6 +98,10 @@ export default class RentOfferService implements RentOfferServiceInterface {
     ]).exec();
   }
 
+  public async findByOwner(userId: string): Promise<DocumentType<RentOfferEntity>[]> {
+    return this.rentOfferModel.find({advertiserId: userId}).exec();
+  }
+
   public async updateById(offerId: string, dto: UpdateRentOfferDTO): Promise<DocumentType<RentOfferEntity> | null> {
     await this.rentOfferModel.findByIdAndUpdate(offerId, dto);
     return this.findById(offerId);

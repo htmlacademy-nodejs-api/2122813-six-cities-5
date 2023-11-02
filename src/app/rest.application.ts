@@ -9,6 +9,7 @@ import { AppComponent } from '../types/app-component.type.js';
 import { getMongoURI } from '../core/utils/db-helper.js';
 import { ControllerInterface } from '../core/controller/controller.interface.js';
 import { ExceptionFilterInterface } from '../core/exception-filters/exception-filter.interface.js';
+import { AuthenticateMiddleware } from '../core/middlewares/authenticate.middleware.js';
 
 @injectable()
 export default class RestApplication {
@@ -76,6 +77,9 @@ export default class RestApplication {
     this.logger.info('Exception filters initialization');
 
     this.expressApplication.use(this.exceptionFilter.catch.bind(this.exceptionFilter));
+
+    const authenticateMiddleware = new AuthenticateMiddleware(this.config.get('JWT_SECRET'));
+    this.expressApplication.use(authenticateMiddleware.execute.bind(authenticateMiddleware));
 
     this.logger.info('Exception filters completed');
   }

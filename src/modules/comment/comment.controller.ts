@@ -13,6 +13,8 @@ import { StatusCodes } from 'http-status-codes';
 import { fillRDO } from '../../core/utils/common.js';
 import CommentRDO from './rdo/comment.rdo.js';
 import { ValidateDTOMiddleware } from '../../core/middlewares/validate-dto.middleware.js';
+import { ReqBody, ResBody } from '../../types/request.type.js';
+import { PrivateRouteMiddleware } from '../../core/middlewares/private-route.middleware.js';
 
 export default class CommentController extends Controller {
   constructor(
@@ -27,23 +29,28 @@ export default class CommentController extends Controller {
       path: '/',
       method: HttpMethod.Post,
       handler: this.create,
-      middlewares: [new ValidateDTOMiddleware(CreateCommentDTO)]
+      middlewares: [
+        new PrivateRouteMiddleware(),
+        new ValidateDTOMiddleware(CreateCommentDTO)
+      ]
     });
   }
 
-  public async create({body}: Request<object, object, CreateCommentDTO>, res: Response): Promise<void> {
+  public async create({body: commentData}: Request<ReqBody, ResBody, CreateCommentDTO>, res: Response): Promise<void> {
 
-    if (!await this.offerService.exists(body.offerId)) {
+    if (!await this.offerService.exists(commentData.offerId)) {
       throw new HttpError(
-        StatusCodes.NOT_FOUND,
-        `Offer with such id ${body.offerId} not exists.`,
+        StatusCodes.CONFLICT,
+        `Offer with such id ${commentData.offerId} not exists.`,
         'CommentController'
       );
     }
 
-    const comment = await this.commentService.create(body);
-    await this.offerService.incCommentCount(body.offerId);
-    await this.offerService.updateRating(body.offerId);
+    const author = res.locals.user;
+
+    const comment = await this.commentService.create({...commentData, authorId: author.id});
+    await this.offerService.incCommentCount(commentData.offerId);
+    await this.offerService.updateRating(commentData.offerId);
     this.created(res, fillRDO(CommentRDO, comment));
   }
 }

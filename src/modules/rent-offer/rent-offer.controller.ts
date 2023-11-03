@@ -1,11 +1,12 @@
 import { inject, injectable } from 'inversify';
 import { Request, Response } from 'express';
-import { ParamsDictionary } from 'express-serve-static-core';
+import { StatusCodes } from 'http-status-codes';
+import {ParamsDictionary } from 'express-serve-static-core';
+
 import { Controller } from '../../core/controller/controller.abstract.js';
 import { LoggerInterface } from '../../core/logger/logger.interface.js';
 import { AppComponent } from '../../types/app-component.type.js';
 import { HttpMethod } from '../../types/http-method.type.js';
-import { StatusCodes } from 'http-status-codes';
 import { fillRDO } from '../../core/utils/common.js';
 import RentOfferService from '../rent-offer/rent-offer.service.js';
 import RentOfferBasicRDO from '../rent-offer/rdo/rent-offer-basic.rdo.js';
@@ -17,12 +18,14 @@ import CommentService from '../comment/comment.service.js';
 import CommentRDO from '../comment/rdo/comment.rdo.js';
 import { ValidateObjectIdMiddleware } from '../../core/middlewares/validate-id.middleware.js';
 import { ValidateDTOMiddleware } from '../../core/middlewares/validate-dto.middleware.js';
-import UpdateRentOfferDTO from './dto/update-rent-offer.dto.js';
 import { MAX_COMMENTS_COUNT } from '../comment/comment.constants.js';
+import UpdateRentOfferDTO from './dto/update-rent-offer.dto.js';
 import { DocumentExistsMiddleware } from '../../core/middlewares/document-exists.middleware.js';
 import { ResBody } from '../../types/request.type.js';
 import { PrivateRouteMiddleware } from '../../core/middlewares/private-route.middleware.js';
 import { CityName } from '../../types/city.type.js';
+import { DocumentModifyMiddleware } from '../../core/middlewares/document-modify.middleware.js';
+
 
 type ParamsOfferDetails = {
   offerId: string;
@@ -36,7 +39,6 @@ export default class RentOfferController extends Controller {
   @inject(AppComponent.CommentServiceInterface) private readonly commentService: CommentService
   ) {
     super(logger);
-
     this.logger.info('Register routes for Rent Offer Controller…');
     this.addRoute({
       path: '/',
@@ -66,7 +68,8 @@ export default class RentOfferController extends Controller {
         new PrivateRouteMiddleware(),
         new ValidateObjectIdMiddleware('offerId'),
         new ValidateDTOMiddleware(UpdateRentOfferDTO),
-        new DocumentExistsMiddleware(this.rentOfferService, 'Rent-offer', 'offerId')
+        new DocumentExistsMiddleware(this.rentOfferService, 'Rent-offer', 'offerId'),
+        new DocumentModifyMiddleware(this.rentOfferService, 'Rent-offer', 'offerId')
       ]
     });
     this.addRoute({
@@ -76,7 +79,8 @@ export default class RentOfferController extends Controller {
       middlewares: [
         new PrivateRouteMiddleware(),
         new ValidateObjectIdMiddleware('offerId'),
-        new DocumentExistsMiddleware(this.rentOfferService, 'Rent-offer', 'offerId')
+        new DocumentExistsMiddleware(this.rentOfferService, 'Rent-offer', 'offerId'),
+        new DocumentModifyMiddleware(this.rentOfferService, 'Rent-offer', 'offerId')
       ]
     });
     this.addRoute({
@@ -99,7 +103,7 @@ export default class RentOfferController extends Controller {
 
   public async getOffers({query: {count}}: Request<ParamsDictionary>, res: Response): Promise<void> {
 
-    const offersCount = count ? Number.parseInt(count.toString(), 10) : DEFAULT_OFFERS_COUNT;
+    const offersCount = (count && !Number.isNaN(Number.parseInt(count.toString(), 10))) ? Number.parseInt(count.toString(), 10) : DEFAULT_OFFERS_COUNT;
     const userId = res.locals.user ? res.locals.user.id : '';
     const offers = await this.rentOfferService.find(offersCount, userId);
 
@@ -139,8 +143,9 @@ export default class RentOfferController extends Controller {
 
   public async deleteOffer({params: {offerId}}: Request<ParamsOfferDetails>, res: Response): Promise<void> {
 
+    const offer = await this.rentOfferService.deleteById(offerId);
     await this.commentService.deleteByOfferId(offerId);
-    this.noContent(res, {message: 'Offer was deleted successfully.'});
+    this.noContent(res, offer);
   }
 
   public async getComments({params: {offerId}}: Request<ParamsOfferDetails>, res: Response): Promise<void> {

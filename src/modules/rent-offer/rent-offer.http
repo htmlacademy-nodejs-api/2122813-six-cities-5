@@ -1,11 +1,11 @@
 #Предложения
 ## Создание нового предложения
 POST http://localhost:4000/rent-offers HTTP/1.1
-X-token: 'somesupertoken'
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InRlc3RAbmV3dGVzdC5jb20iLCJpZCI6IjY1NDUwODJjMjU4OWFmYzAyZTY4YjY0ZiIsImlhdCI6MTY5OTAyMjg5MiwiZXhwIjoxNjk5MTA5MjkyfQ.hqjqi6iRi2aiOv_ZGeD2kg2LfLOUkVBQXYCGyG89xjk
 Content-Type: application/json
 
 {
-  "title": "validation test",
+  "title": "validation test for delete",
   "description": "long description for validation testoffer",
   "city": "Amsterdam",
   "previewImage": "preview.jpg",
@@ -26,14 +26,15 @@ Content-Type: application/json
         "Washer",
         "Laptop"
   ],
-  "advertiserId": "64760b2a6a803a09ab8e9a2f",
   "latitude": 50.837557,
   "longitude": 4.351697
 }
+
 ###
 
 ## Получить список предложений
-GET http://localhost:4000/rent-offers HTTP/1.1
+GET http://localhost:4000/rent-offers?count=4 HTTP/1.1
+
 ###
 
 ## Получить список премиальных предложений города
@@ -41,11 +42,14 @@ GET http://localhost:4000/rent-offers/premium?city=Paris HTTP/1.1
 ###
 
 ## Получить всю информацию о предложении
-GET http://localhost:4000/rent-offers/6487275952b1fd03b2bbcca6 HTTP/1.1
+GET http://localhost:4000/rent-offers/65325655cef4c3c2a2d512a0 HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImctZWFzeUBiZWVub24uY29tIiwiaWQiOiI2NDc2MGIyYTZhODAzYTA5YWI4ZTlhMmYiLCJpYXQiOjE2ODcyNjE5NTcsImV4cCI6MTY4NzM0ODM1N30.1HClWaMKeh2u07Ts62-DjvsGwtYdFRG83moghpBfOjg
+
+
 ###
 
 ## Обновить информацию о предложении
-PATCH http://localhost:4000/rent-offers/6487275652b1fd03b2bbcca3 HTTP/1.1
+PATCH http://localhost:4000/rent-offers/65325655cef4c3c2a2d512a0 HTTP/1.1
 X-token: 'somesupertoken'
 Content-Type: application/json
 {
@@ -58,10 +62,12 @@ Content-Type: application/json
 ###
 
 ## Удалить предложение
-DELETE http://localhost:4000/rent-offers/64760b2a6a803a09ab8e9a31 HTTP/1.1
-X-token: 'somesupertoken'
+DELETE http://localhost:4000/rent-offers/65325655cef4c3c2a2d512a0 HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImctZWFzeUBiZWVub24uY29tIiwiaWQiOiI2NDc2MGIyYTZhODAzYTA5YWI4ZTlhMmYiLCJpYXQiOjE2ODcyNjE5NTcsImV4cCI6MTY4NzM0ODM1N30.1HClWaMKeh2u07Ts62-DjvsGwtYdFRG83moghpBfOjg
+
+
 ###
 
 ##Получить список комментариев к офферу
-GET http://localhost:4000/rent-offers/6487275352b1fd03b2bbcca0/comments HTTP/1.1
+GET http://localhost:4000/rent-offers/65325655cef4c3c2a2d512a0/comments HTTP/1.1
 ###

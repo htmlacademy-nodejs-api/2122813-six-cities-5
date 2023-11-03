@@ -4,53 +4,55 @@ POST http://localhost:4000/users/register HTTP/1.1
 Content-Type: application/json
 
 {
-  "username": "Keeekw",
-  "email": "newUser@beenon.com",
-  "password": "weakpass",
-  "status": "pro",
-  "avatarPath": "user-avatar-6.jpg"
+  "username": "testuser",
+  "email": "test@newtest.com",
+  "password": "weakpass1234",
+  "status": "pro"
+  //"avatarPath": "user-avatar-6.jpg"
 }
 ###
-
 ## Авторизовать пользователя
 POST http://localhost:4000/users/auth HTTP/1.1
 Content-Type: application/json
 
 {
-  "email": "g-easy@beenon.com",
-  "password": "weakpass"
+  "email": "test@newtest.com",
+  "password": "weakpass1234"
 }
+
+//eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InRlc3RAbmV3dGVzdC5jb20iLCJpZCI6IjY0OTIxZTgxNGQwNTAzMWI5NGIzOGQ5ZCIsImlhdCI6MTY4NzI5NzY3NywiZXhwIjoxNjg3Mzg0MDc3fQ.VBxeVt60JYxo8E7bS-IXHRxKdmRFIf7ongM2QKuQPwY
 ###
 
 ## Запрос статуса авторизации пользователя
 GET  http://localhost:4000/users/auth HTTP/1.1
-X-token: 'somesupertoken'
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InRlc3RAbmV3dGVzdC5jb20iLCJpZCI6IjY0OTIxZTgxNGQwNTAzMWI5NGIzOGQ5ZCIsImlhdCI6MTY4NzI5NzY3NywiZXhwIjoxNjg3Mzg0MDc3fQ.VBxeVt60JYxo8E7bS-IXHRxKdmRFIf7ongM2QKuQPwY
 ###
 
 ## Завершения сеанса пользователя
 DELETE http://localhost:4000/users/logout HTTP/1.1
 X-token: 'somesupertoken'
-
 ###
 
 ## Добавление предложения в избранное
-PUT http://localhost:4000/users/64760b2a6a803a09ab8e9a34/favorites/6487271d52b1fd03b2bbcc9d?isFav=1 HTTP/1.1
+PUT http://localhost:4000/users/64921e814d05031b94b38d9d/favorites/64919e4cac5ebc2a1d5e8ba4?isFav=1 HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InRlc3RAbmV3dGVzdC5jb20iLCJpZCI6IjY0OTIxZTgxNGQwNTAzMWI5NGIzOGQ5ZCIsImlhdCI6MTY4NzI5NzY3NywiZXhwIjoxNjg3Mzg0MDc3fQ.VBxeVt60JYxo8E7bS-IXHRxKdmRFIf7ongM2QKuQPwY
+
 
 ###
 
 ## Получить избранные предложения пользователя
-GET http://localhost:4000/users/64760b2a6a803a09ab8e9a34/favorites/ HTTP/1.1
+GET http://localhost:4000/users/64921e814d05031b94b38d9d/favorites/ HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InRlc3RAbmV3dGVzdC5jb20iLCJpZCI6IjY0OTIxZTgxNGQwNTAzMWI5NGIzOGQ5ZCIsImlhdCI6MTY4NzI5NzY3NywiZXhwIjoxNjg3Mzg0MDc3fQ.VBxeVt60JYxo8E7bS-IXHRxKdmRFIf7ongM2QKuQPwY
 
 ###
 
 ## Загрузка аватара пользователем
-
-PUT  http://localhost:4000/users/6539260b6e45398aae1dc1d1/avatar HTTP/1.1
+PUT  http://localhost:4000/users/64760b2a6a803a09ab8e9a2f/avatar HTTP/1.1
 Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
 
 ------WebKitFormBoundary7MA4YWxkTrZu0gW
-Content-Disposition: form-data; name="avatar"; filename="dino"
-Content-Type: image/jpeg image/png
+Content-Disposition: form-data; name="avatar"; filename="image.png"
+Content-Type: image/jpeg
 
-< //
+< Q:/test.txt
 ------WebKitFormBoundary7MA4YWxkTrZu0gW--

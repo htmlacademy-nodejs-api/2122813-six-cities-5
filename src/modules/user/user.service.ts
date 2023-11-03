@@ -8,6 +8,7 @@ import { LoggerInterface } from '../../core/logger/logger.interface.js';
 import { AppComponent } from '../../types/app-component.type.js';
 import { RentOfferEntity } from '../rent-offer/rent-offer.entity.js';
 import { SortType } from '../../types/sort-order.type.js';
+import AuthUserDTO from './dto/auth-user.dto.js';
 
 @injectable()
 export default class UserService implements UserServiceInterface {
@@ -32,13 +33,13 @@ export default class UserService implements UserServiceInterface {
     return this.userModel.findById(userId).exec();
   }
 
-  public async findOrCreate(DTO: CreateUserDTO, salt: string): Promise<DocumentType<UserEntity>> {
-    const existedUser = await this.findByEmail(DTO.email);
+  public async findOrCreate(dto: CreateUserDTO, salt: string): Promise<DocumentType<UserEntity>> {
+    const existedUser = await this.findByEmail(dto.email);
     if (existedUser) {
       return existedUser;
     }
 
-    return this.create(DTO, salt);
+    return this.create(dto, salt);
   }
 
   public async findUserFavorites(userId: string): Promise<DocumentType<RentOfferEntity>[] | null> {
@@ -61,5 +62,19 @@ export default class UserService implements UserServiceInterface {
 
   public async exists(userId: string): Promise<boolean> {
     return (await this.userModel.exists({_id: userId})) !== null;
+  }
+
+  public async verifyUser(dto: AuthUserDTO, salt: string): Promise<DocumentType<UserEntity> | null> {
+    const existUser = await this.findByEmail(dto.email);
+
+    if (!existUser || !existUser.verifyPassword(dto.password, salt)) {
+      return null;
+    }
+
+    return existUser;
+  }
+
+  public async canModify(authUserId: string, userId: string): Promise<boolean> {
+    return Promise.resolve(authUserId === userId);
   }
 }

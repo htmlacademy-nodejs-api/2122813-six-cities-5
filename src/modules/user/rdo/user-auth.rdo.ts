@@ -1,6 +1,10 @@
 import { Expose } from 'class-transformer';
 
-export default class NewUserRDO {
+export default class UserAuthRDO {
+
+  @Expose()
+  public token!: string;
+
   @Expose()
   public username!: string;
 

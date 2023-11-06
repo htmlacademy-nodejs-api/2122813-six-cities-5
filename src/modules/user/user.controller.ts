@@ -21,12 +21,13 @@ import { ValidateDTOMiddleware } from '../../core/middlewares/validate-dto.middl
 import AuthUserDTO from './dto/auth-user.dto.js';
 import { DocumentExistsMiddleware } from '../../core/middlewares/document-exists.middleware.js';
 import { UploadFileMiddleware } from '../../core/middlewares/upload-file.middleware.js';
-import { ResBody } from '../../types/request.type.js';
+import { ResBody } from '../../types/default-response.type.js';
 import { JWT_ALGORITHM } from './user.constants.js';
 import { PrivateRouteMiddleware } from '../../core/middlewares/private-route.middleware.js';
 import { DocumentModifyMiddleware } from '../../core/middlewares/document-modify.middleware.js';
 import UserBasicRDO from './rdo/user-basic.rdo.js';
 import { RentOfferFullRDO } from '../rent-offer/rdo/rent-offer-full.rdo.js';
+import AuthError from '../../core/errors/auth-error.js';
 
 type ParamsUserDetails = {
   userId: string;
@@ -142,8 +143,7 @@ export default class UserController extends Controller {
     const existUser = await this.userService.verifyUser(authData, this.configService.get('SALT'));
 
     if (!existUser) {
-      throw new HttpError(
-        StatusCodes.UNAUTHORIZED,
+      throw new AuthError(
         'Wrong authentication data. Check your login and password.',
         'UserController'
       );

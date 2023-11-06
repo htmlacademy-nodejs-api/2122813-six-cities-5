@@ -21,7 +21,7 @@ import { ValidateDTOMiddleware } from '../../core/middlewares/validate-dto.middl
 import { MAX_COMMENTS_COUNT } from '../comment/comment.constants.js';
 import UpdateRentOfferDTO from './dto/update-rent-offer.dto.js';
 import { DocumentExistsMiddleware } from '../../core/middlewares/document-exists.middleware.js';
-import { ResBody } from '../../types/request.type.js';
+import { ResBody } from '../../types/default-response.type.js';
 import { PrivateRouteMiddleware } from '../../core/middlewares/private-route.middleware.js';
 import { CityName } from '../../types/city.type.js';
 import { DocumentModifyMiddleware } from '../../core/middlewares/document-modify.middleware.js';

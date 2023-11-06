@@ -75,6 +75,6 @@ export default class UserService implements UserServiceInterface {
   }
 
   public async canModify(authUserId: string, userId: string): Promise<boolean> {
-    return Promise.resolve(authUserId === userId);
+    return authUserId === userId;
   }
 }

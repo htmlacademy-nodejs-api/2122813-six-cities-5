@@ -25,21 +25,26 @@ import { ResBody } from '../../types/default-response.type.js';
 import { PrivateRouteMiddleware } from '../../core/middlewares/private-route.middleware.js';
 import { CityName } from '../../types/city.type.js';
 import { DocumentModifyMiddleware } from '../../core/middlewares/document-modify.middleware.js';
-
+import { ConfigInterface } from '../../core/config/config.interface.js';
+import { RestSchema } from '../../core/config/rest.schema.js';
+import { UploadFileMiddleware } from '../../core/middlewares/upload-file.middleware.js';
+import PreviewImageRDO from './rdo/preview-image.rdo.js';
 
 type ParamsOfferDetails = {
   offerId: string;
 } | ParamsDictionary;
-
 @injectable()
 export default class RentOfferController extends Controller {
   constructor(
-  @inject(AppComponent.LoggerInterface) logger: LoggerInterface,
+  @inject(AppComponent.LoggerInterface) protected readonly logger: LoggerInterface,
   @inject(AppComponent.RentOfferServiceInterface) private readonly rentOfferService: RentOfferService,
-  @inject(AppComponent.CommentServiceInterface) private readonly commentService: CommentService
+  @inject(AppComponent.CommentServiceInterface) private readonly commentService: CommentService,
+  @inject(AppComponent.ConfigInterface) protected readonly configService: ConfigInterface<RestSchema>
   ) {
-    super(logger);
+    super(logger, configService);
+
     this.logger.info('Register routes for Rent Offer Controller…');
+
     this.addRoute({
       path: '/',
       method: HttpMethod.Post,
@@ -92,27 +97,35 @@ export default class RentOfferController extends Controller {
         new DocumentExistsMiddleware(this.rentOfferService, 'Rent-offer', 'offerId')
       ]
     });
+    this.addRoute({
+      path: '/:offerId/preview',
+      method: HttpMethod.Post,
+      handler: this.uploadPreviewImage,
+      middlewares: [
+        new PrivateRouteMiddleware(),
+        new ValidateObjectIdMiddleware('offerId'),
+        new DocumentExistsMiddleware(this.rentOfferService, 'Rent-offer', 'offerId'),
+        new DocumentModifyMiddleware(this.rentOfferService, 'Rent-offer', 'offerId'),
+        new UploadFileMiddleware(this.configService.get('UPLOAD_DIRECTORY_PATH'), 'preview-image'),
+      ]
+    });
   }
 
   public async createOffer({body: offerData}: Request<ParamsDictionary, ResBody, CreateRentOfferDTO>, res: Response): Promise<void> {
     const advertiser = res.locals.user;
-
     const newOffer = await this.rentOfferService.create({...offerData, advertiserId: advertiser.id});
     this.created(res, fillRDO(RentOfferFullRDO, newOffer));
   }
 
   public async getOffers({query: {count}}: Request<ParamsDictionary>, res: Response): Promise<void> {
-
     const offersCount = (count && !Number.isNaN(Number.parseInt(count.toString(), 10))) ? Number.parseInt(count.toString(), 10) : DEFAULT_OFFERS_COUNT;
     const userId = res.locals.user ? res.locals.user.id : '';
     const offers = await this.rentOfferService.find(offersCount, userId);
-
     const offersResponse = offers?.map((offer) => fillRDO(RentOfferBasicRDO, offer));
     this.ok(res, offersResponse);
   }
 
   public async getPremiumOffers({query: {city}}: Request, res: Response): Promise<void> {
-
     if (!city || !Object.values(CityName).map((cityName) => cityName.toString()).includes(city.toString())) {
       throw new HttpError(
         StatusCodes.BAD_REQUEST,
@@ -120,37 +133,39 @@ export default class RentOfferController extends Controller {
         'RentOfferController'
       );
     }
-
     const userId = res.locals.user ? res.locals.user.id : '';
     const premiumOffers = await this.rentOfferService.findPremium(city.toString(), MAX_PREMIUM_OFFERS_COUNT, userId);
-
     const offersResponse = premiumOffers?.map((offer) => fillRDO(RentOfferBasicRDO, offer));
     this.ok(res, offersResponse);
   }
 
   public async getOfferDetails({params: {offerId}}: Request<ParamsOfferDetails>, res: Response): Promise<void> {
-
     const userId = res.locals.user ? res.locals.user.id : '';
     const offer = await this.rentOfferService.findById(offerId, userId);
     this.ok(res, fillRDO(RentOfferFullRDO, offer));
   }
 
   public async updateOffer({body: updateData, params: {offerId}}: Request<ParamsOfferDetails, ResBody, UpdateRentOfferDTO>, res: Response): Promise<void> {
-
     const updatedOffer = await this.rentOfferService.updateById(offerId, updateData);
     this.ok(res, fillRDO(RentOfferFullRDO, updatedOffer));
   }
 
   public async deleteOffer({params: {offerId}}: Request<ParamsOfferDetails>, res: Response): Promise<void> {
-
     const offer = await this.rentOfferService.deleteById(offerId);
     await this.commentService.deleteByOfferId(offerId);
     this.noContent(res, offer);
   }
 
   public async getComments({params: {offerId}}: Request<ParamsOfferDetails>, res: Response): Promise<void> {
-
     const comments = await this.commentService.findByOfferId(offerId, MAX_COMMENTS_COUNT);
     this.ok(res, fillRDO(CommentRDO, comments));
+  }
+
+  public async uploadPreviewImage(req: Request<ParamsOfferDetails>, res: Response): Promise<void> {
+    const {offerId} = req.params;
+    const updateDTO = { previewImage: req.file?.filename };
+
+    await this.rentOfferService.updateById(offerId, updateDTO);
+    this.created(res, fillRDO(PreviewImageRDO, {updateDTO}));
   }
 }

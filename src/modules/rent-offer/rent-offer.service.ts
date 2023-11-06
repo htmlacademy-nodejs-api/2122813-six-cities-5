@@ -7,6 +7,7 @@ import { RentOfferEntity } from './rent-offer.entity.js';
 import CreateRentOfferDTO from './dto/create-rent-offer.dto.js';
 import UpdateRentOfferDTO from './dto/update-rent-offer.dto.js';
 import { SortType } from '../../types/sort-order.type.js';
+import { DEFAULT_PREVIEW_IMAGE } from './rent-offer.constants.js';
 
 @injectable()
 export default class RentOfferService implements RentOfferServiceInterface {
@@ -16,7 +17,7 @@ export default class RentOfferService implements RentOfferServiceInterface {
   ) {}
 
   public async create(dto: CreateRentOfferDTO): Promise<DocumentType<RentOfferEntity>> {
-    const rentOfferEntry = await this.rentOfferModel.create(dto).then((offer) => {
+    const rentOfferEntry = await this.rentOfferModel.create({...dto, previewImage: DEFAULT_PREVIEW_IMAGE}).then((offer) => {
       offer.isFavorite = false;
       return offer;
     });

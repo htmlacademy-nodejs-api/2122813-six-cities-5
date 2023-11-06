@@ -40,3 +40,4 @@ export const Cities: Record<string, City> = {
 
 export const DEFAULT_OFFERS_COUNT = 60;
 export const MAX_PREMIUM_OFFERS_COUNT = 3;
+export const DEFAULT_PREVIEW_IMAGE = 'default-preview.png';

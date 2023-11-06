@@ -1,26 +1,33 @@
 import convict from 'convict';
 import validator from 'convict-format-with-validator';
-
 convict.addFormats(validator);
 
 export type RestSchema = {
-  EXPRESS_PORT: number;
+  SERVICE_HOST: string;
+  SERVICE_PORT: number;
   SALT: string;
   DB_HOST: string;
   DB_USER: string;
   DB_PASSWORD: string;
   DB_PORT: string;
   DB_NAME: string;
-  UPLOAD_DIRECTORY: string;
+  UPLOAD_DIRECTORY_PATH: string;
+  STATIC_DIRECTORY_PATH: string;
   JWT_SECRET: string;
 }
 
 export const configRestSchema = convict<RestSchema>({
-  EXPRESS_PORT: {
+  SERVICE_HOST: {
+    doc: 'Host for service launch',
+    format: String,
+    env: 'SERVICE_HOST',
+    default: 'localhost'
+  },
+  SERVICE_PORT: {
     doc: 'Port for incoming connections',
     format: 'port',
-    env: 'EXPRESS_PORT',
-    default: 4000
+    env: 'SERVICE_PORT',
+    default: null
   },
   SALT: {
     doc: 'Random string for password hash',
@@ -58,11 +65,17 @@ export const configRestSchema = convict<RestSchema>({
     env: 'DB_NAME',
     default: 'six-cities-db'
   },
-  UPLOAD_DIRECTORY: {
+  UPLOAD_DIRECTORY_PATH: {
     doc: 'Directory for upload files from users',
     format: String,
-    env: 'UPLOAD_DIRECTORY',
+    env: 'UPLOAD_DIRECTORY_PATH',
     default: null
+  },
+  STATIC_DIRECTORY_PATH: {
+    doc: 'Path to directory with static resources',
+    format: String,
+    env: 'STATIC_DIRECTORY_PATH',
+    default: 'static'
   },
   JWT_SECRET: {
     doc: 'Secret for sign JWT token',

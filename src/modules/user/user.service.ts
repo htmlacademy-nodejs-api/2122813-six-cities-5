@@ -9,6 +9,8 @@ import { AppComponent } from '../../types/app-component.type.js';
 import { RentOfferEntity } from '../rent-offer/rent-offer.entity.js';
 import { SortType } from '../../types/sort-order.type.js';
 import AuthUserDTO from './dto/auth-user.dto.js';
+import { DEFAULT_AVATAR_FILE_NAME } from './user.constants.js';
+import UpdateUserDTO from './dto/update-user.dto.js';
 
 @injectable()
 export default class UserService implements UserServiceInterface {
@@ -18,7 +20,7 @@ export default class UserService implements UserServiceInterface {
   ) {}
 
   public async create(dto: CreateUserDTO, salt: string): Promise<DocumentType<UserEntity>> {
-    const user = new UserEntity(dto);
+    const user = new UserEntity({...dto, avatarPath: DEFAULT_AVATAR_FILE_NAME});
     user.setPassword(dto.password, salt);
     const userEntry = await this.userModel.create(user);
     this.logger.info(`New user created: ${user.email}`);
@@ -54,6 +56,10 @@ export default class UserService implements UserServiceInterface {
       .orFail()
       .exec()
       .then((res) => res.favorites);
+  }
+
+  public async updateById(userId: string, dto: UpdateUserDTO): Promise<DocumentType<UserEntity> | null> {
+    return this.userModel.findByIdAndUpdate(userId, dto, {new: true}).exec();
   }
 
   public async changeFavoriteStatus(userId: string, offerId: string, status: boolean): Promise<DocumentType<UserEntity> | null> {

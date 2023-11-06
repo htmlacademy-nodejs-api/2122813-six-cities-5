@@ -1,4 +1,4 @@
-import { IsEmail, IsEnum, IsMimeType, IsOptional, IsString, MaxLength, MinLength } from 'class-validator';
+import { IsEmail, IsEnum, IsString, MaxLength, MinLength } from 'class-validator';
 
 import { UserStatus } from '../../../types/user-status.type.js';
 
@@ -16,9 +16,9 @@ export default class CreateUserDTO {
   @MaxLength(12, {message: 'Max length for password is 12 chars'})
   public password!: string;
 
-  @IsOptional()
-  @IsMimeType({message: 'avatar must be a valid image file'})
-  public avatarPath!: string;
+  //@IsOptional()
+  //@IsMimeType({message: 'avatar must be a valid image file'})
+  //public avatarPath!: string;
 
   @IsEnum(UserStatus, {message: 'user status must be either "pro" or "обычный"'})
   public status!: UserStatus;

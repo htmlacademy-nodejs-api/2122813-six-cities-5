@@ -17,7 +17,7 @@ export default class CreateRentOfferDTO {
   public city!: CityName;
 
   //@IsMimeType({message: 'preview must be a valid image file'})
-  public previewImage!: string;
+  //public previewImage!: string;
 
   //@IsArray({message: '"images" field must be an array'})
   //@ArrayMinSize(6, {message: '"images" field must contain 6 image files'})

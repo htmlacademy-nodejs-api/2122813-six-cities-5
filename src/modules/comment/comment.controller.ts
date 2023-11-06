@@ -1,6 +1,7 @@
 import { inject } from 'inversify';
 import { Request, Response } from 'express';
 import {ParamsDictionary } from 'express-serve-static-core';
+import { StatusCodes } from 'http-status-codes';
 
 import { Controller } from '../../core/controller/controller.abstract.js';
 import { HttpMethod } from '../../types/http-method.type.js';
@@ -10,20 +11,23 @@ import { RentOfferServiceInterface } from '../rent-offer/rent-offer-service.inte
 import { LoggerInterface } from '../../core/logger/logger.interface.js';
 import CreateCommentDTO from './dto/create-comment.dto.js';
 import HttpError from '../../core/errors/http-error.js';
-import { StatusCodes } from 'http-status-codes';
 import { fillRDO } from '../../core/utils/common.js';
 import CommentRDO from './rdo/comment.rdo.js';
 import { ValidateDTOMiddleware } from '../../core/middlewares/validate-dto.middleware.js';
 import { ResBody } from '../../types/default-response.type.js';
 import { PrivateRouteMiddleware } from '../../core/middlewares/private-route.middleware.js';
+import { ConfigInterface } from '../../core/config/config.interface.js';
+import { RestSchema } from '../../core/config/rest.schema.js';
 
 export default class CommentController extends Controller {
   constructor(
-    @inject(AppComponent.LoggerInterface) logger: LoggerInterface,
+    @inject(AppComponent.LoggerInterface) protected readonly logger: LoggerInterface,
     @inject(AppComponent.CommentServiceInterface) private readonly commentService: CommentServiceInterface,
     @inject(AppComponent.RentOfferServiceInterface) private readonly offerService: RentOfferServiceInterface,
+    @inject(AppComponent.ConfigInterface) protected readonly configService: ConfigInterface<RestSchema>
   ) {
-    super(logger);
+    super(logger, configService);
+
     this.logger.info('Register routes for CommentController…');
     this.addRoute({
       path: '/',

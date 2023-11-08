@@ -7,34 +7,33 @@ import { LoggerInterface } from '../logger/logger.interface.js';
 import { RouteInterface } from '../../types/route.interface.js';
 import { ConfigInterface } from '../config/config.interface.js';
 import { RestSchema } from '../config/rest.schema.js';
-import { getFullServerPath, transformData } from '../utils/common.js';
-import { STATIC_RESOURCE_FIELDS } from '../../app/rest.constants.js';
-import { ResBody } from '../../types/default-response.type.js';
+// import { getFullServerPath, transformDataStatic } from '../utils/common.js';
+// import { STATIC_RESOURCE_FIELDS } from '../../app/rest.constants.js';
+// import { ResBody } from '../../types/default-response.type.js';
 
 @injectable()
 export abstract class Controller implements ControllerInterface {
-  private readonly _router: Router;
+  public readonly router: Router;
 
   constructor(
     protected readonly logger: LoggerInterface,
     protected readonly configService: ConfigInterface<RestSchema>
   ) {
-    this._router = Router();
+    this.router = Router();
   }
 
-  get router() {
-    return this._router;
-  }
+  // private getStaticDirPath() {
+  //   const fullServerPath = getFullServerPath(this.configService.get('SERVICE_HOST'), this.configService.get('SERVICE_PORT'));
+  //   return `${fullServerPath}/${this.configService.get('STATIC_DIRECTORY_PATH')}`;
+  // }
 
-  protected addStaticPath(data: ResBody): void {
-    const fullServerPath = getFullServerPath(this.configService.get('SERVICE_HOST'), this.configService.get('SERVICE_PORT'));
-    transformData(
-      STATIC_RESOURCE_FIELDS,
-      `${fullServerPath}/${this.configService.get('STATIC_DIRECTORY_PATH')}`,
-      `${fullServerPath}/${this.configService.get('UPLOAD_DIRECTORY_PATH')}`,
-      data
-    );
-  }
+  // protected addStaticFilePaths(data: ResBody): void {
+  //   transformDataStatic(
+  //     STATIC_RESOURCE_FIELDS,
+  //     `${this.getStaticDirPath()}`,
+  //     data
+  //   );
+  // }
 
   public addRoute(route: RouteInterface) {
     const {path, method, handler} = route;
@@ -42,13 +41,15 @@ export abstract class Controller implements ControllerInterface {
     const middlewares = route.middlewares?.map(
       (middleware) => asyncHandler(middleware.execute.bind(middleware))
     );
+
     const allHandlers = middlewares ? [...middlewares, routeHandler] : routeHandler;
-    this._router[method](path, allHandlers);
+    this.router[method](path, allHandlers);
+
     this.logger.info(`Route registered: ${method.toUpperCase()} ${path}`);
   }
 
   public send<T>(res: Response, statusCode: number, data: T): void {
-    this.addStaticPath(data as ResBody);
+    // this.addStaticFilePaths(data as ResBody);
     res
       .type('application/json')
       .status(statusCode)

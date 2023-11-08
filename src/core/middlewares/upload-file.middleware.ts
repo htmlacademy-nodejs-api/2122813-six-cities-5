@@ -15,10 +15,15 @@ export class UploadFileMiddleware implements MiddlewareInterface {
   ) {}
 
   public async execute(req: Request, res: Response, next: NextFunction): Promise<void> {
+    const {offerId} = req.params;
 
     const allowedExtensions = ['jpg', 'jpeg', 'png'];
 
-    const destPath = path.join(this.uploadDirectory, `${res.locals.user.id}`, `${this.reqFieldName}`);
+    const destPath = path.join(
+      this.uploadDirectory,
+      `${res.locals.user.id}`,
+      `${offerId ? path.join('offers', `${offerId}`) : ''}`,
+      `${this.reqFieldName}`);
 
     await access(destPath).catch(async () => {
       await mkdir(destPath, { recursive: true });

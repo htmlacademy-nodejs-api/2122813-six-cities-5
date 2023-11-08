@@ -66,7 +66,7 @@ export default class RestApplication {
     this.logger.info('Global middleware initialization...');
 
     this.expressApplication.use(express.json());
-    this.expressApplication.use('/upload', express.static(this.config.get('UPLOAD_DIRECTORY_PATH')));
+    this.expressApplication.use('/users-uploads', express.static(this.config.get('UPLOAD_DIRECTORY_PATH')));
     this.expressApplication.use('/static',express.static(this.config.get('STATIC_DIRECTORY_PATH')));
 
     const authenticateMiddleware = new AuthenticateMiddleware(this.config.get('JWT_SECRET'));

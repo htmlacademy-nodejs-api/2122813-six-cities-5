@@ -1,6 +1,6 @@
 import { Expose } from 'class-transformer';
 
 export default class UserAvatarRDO {
-  @Expose()
+  @Expose({name: 'avatar'})
   public avatarPath!: string;
 }

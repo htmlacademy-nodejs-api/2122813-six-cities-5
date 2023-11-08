@@ -60,11 +60,29 @@ export function transformProperty(property: string, srcObject: ResBody, transfor
   });
 }
 
-export function transformData(properties: string[], staticPath: string, uploadPath: string, srcObject: ResBody) {
-  return properties.forEach((property) => {
+export function transformDataStatic(staticProps: string[], staticPath: string, srcObject: ResBody) {
+  return staticProps.forEach((property) => {
     transformProperty(property, srcObject, (target: ResBody) => {
-      const rootPath = DEFAULT_STATIC_IMAGES.includes(target[property] as string) ? staticPath : uploadPath;
-      target[property] = `${rootPath}/${target[property]}`;
+      if (DEFAULT_STATIC_IMAGES.includes(target[property] as string)) {
+        target[property] = `${staticPath}/${target[property]}`;
+      }
+    });
+  });
+}
+
+export function transformDataUpload(staticProps: string[], uploadPaths: string[], srcObject: ResBody) {
+
+  const [avatarPath, previewPath, imagesPath] = uploadPaths;
+
+  return staticProps.forEach((property) => {
+    transformProperty(property, srcObject, (target: ResBody) => {
+      if (property === 'avatarPath') {
+        target[property] = `${avatarPath}/${target[property]}`;
+      } else if (property === 'previewImage') {
+        target[property] = `${previewPath}/${target[property]}`;
+      } else if (property === 'images') {
+        target[property] = `${imagesPath}/${target[property]}`;
+      }
     });
   });
 }

@@ -1,25 +1,22 @@
 import { IsEmail, IsEnum, IsString, MaxLength, MinLength } from 'class-validator';
 
 import { UserStatus } from '../../../types/user-status.type.js';
+import { PASSWORD_LENGTH, NAME_LENGTH } from '../user.constants.js';
 
 export default class CreateUserDTO {
   @IsString({message: 'username is required'})
-  @MinLength(1, {message: 'Min length for username is 1 char'})
-  @MaxLength(15, {message: 'Max length for username is 15 chars'})
+  @MinLength(NAME_LENGTH.MIN, {message: `Min length for username is ${NAME_LENGTH.MIN} char`})
+  @MaxLength(NAME_LENGTH.MAX, {message: `Max length for username is ${NAME_LENGTH.MAX} chars`})
   public username!: string;
 
   @IsEmail({}, {message: 'email must be valid'})
   public email!: string;
 
   @IsString({message: 'password is required'})
-  @MinLength(6, {message: 'Min length for password is 6 chars'})
-  @MaxLength(12, {message: 'Max length for password is 12 chars'})
+  @MinLength(PASSWORD_LENGTH.MIN, {message: `Min length for password is ${PASSWORD_LENGTH.MIN} chars`})
+  @MaxLength(PASSWORD_LENGTH.MAX, {message: `Max length for password is ${PASSWORD_LENGTH.MAX} chars`})
   public password!: string;
 
-  //@IsOptional()
-  //@IsMimeType({message: 'avatar must be a valid image file'})
-  //public avatarPath!: string;
-
-  @IsEnum(UserStatus, {message: 'user status must be either "pro" or "обычный"'})
+  @IsEnum(UserStatus, {message: `user status must be either ${UserStatus.Pro} or ${UserStatus.Default}`})
   public status!: UserStatus;
 }

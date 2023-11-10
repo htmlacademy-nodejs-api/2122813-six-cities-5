@@ -10,9 +10,8 @@ import MongoClientService from '../datdbase-client/mongo-client.service.js';
 import { RentOffer } from '../../types/rent-offer.type.js';
 import { getRandomArrItem } from '../utils/random.js';
 import { passwords } from '../../../mocks/passwords.js';
-import { getMongoURI } from '../utils/db-helper.js';
+import ConfigService from '../config/config.service.js';
 
-const DEFAULT_DB_PORT = '27017';
 
 export default class ImportCommand implements CliCommandInterface {
   public readonly name = '--import';
@@ -21,6 +20,7 @@ export default class ImportCommand implements CliCommandInterface {
   private userService: UserService;
   private rentOfferService: RentOfferService;
   private databaseService: MongoClientService;
+  private configService: ConfigService;
   private salt!: string;
 
   constructor() {
@@ -28,9 +28,10 @@ export default class ImportCommand implements CliCommandInterface {
     this.onComplete = this.onComplete.bind(this);
 
     this.logger = new PinoLogger();
-    this.rentOfferService = new RentOfferService(this.logger, RentOfferModel);
-    this.userService = new UserService(this.logger, UserModel);
-    this.databaseService = new MongoClientService(this.logger);
+    this.configService = new ConfigService(this.logger);
+    this.rentOfferService = new RentOfferService(this.logger, RentOfferModel, this.configService);
+    this.userService = new UserService(this.logger, UserModel, this.configService);
+    this.databaseService = new MongoClientService(this.logger, this.configService);
   }
 
   private async saveOffer(offer: RentOffer) {
@@ -53,22 +54,20 @@ export default class ImportCommand implements CliCommandInterface {
     this.databaseService.disconnect();
   }
 
-  public async execute(
-    filename: string,
-    login: string,
-    password: string,
-    host: string,
-    dbname: string,
-    salt: string
-  ): Promise<void> {
-    const DBUriPath = getMongoURI(login, password, host, DEFAULT_DB_PORT, dbname);
-    this.salt = salt;
+  public async execute(...params: string[]): Promise<void> {
+    if (params.length !== 1) {
+      throw new Error('Invalid command params length');
+    }
+
+    const [filename] = params;
+
+    this.salt = this.configService.get('SALT');
 
     if (!filename) {
       throw new Error('File doesn\'t exist');
     }
 
-    await this.databaseService.connect(DBUriPath);
+    await this.databaseService.connect(this.configService.get('CLI_CONNECT_DB_PATH'));
 
     const fileReader = new TSVFileReader(filename.trim());
 
@@ -78,6 +77,5 @@ export default class ImportCommand implements CliCommandInterface {
     await fileReader.read().catch((error) => {
       console.log(`Can't read the file: ${getErrorMessage(error)}`);
     });
-
   }
 }

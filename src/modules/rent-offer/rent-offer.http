@@ -1,23 +1,15 @@
 #Предложения
 ## Создание нового предложения
 POST http://localhost:4000/rent-offers HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InRlc3RAbmV3dGVzdC5jb20iLCJpZCI6IjY1NDUwODJjMjU4OWFmYzAyZTY4YjY0ZiIsImlhdCI6MTY5OTAyMjg5MiwiZXhwIjoxNjk5MTA5MjkyfQ.hqjqi6iRi2aiOv_ZGeD2kg2LfLOUkVBQXYCGyG89xjk
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InVzZXItbm8tYWR2ZXJ0aXNlckBuZXd0ZXN0LnJ1IiwiaWQiOiI2NTRlNGU3NjQwZjYzZmM5MGQ0MmRiNTEiLCJpYXQiOjE2OTk2MzA3ODYsImV4cCI6MTY5OTcxNzE4Nn0.vPRhAXEqXEjguRY0S3v3yfgDSCYzcyyPnBsed7eQybI
 Content-Type: application/json
 
 {
-  "title": "validation test for delete",
+  "title": "new offer with no img",
   "description": "long description for validation testoffer",
-  "city": "Amsterdam",
-  "previewImage": "preview.jpg",
-  "images": [
-        "offer-image-7.jpg",
-        "offer-image-6.jpg",
-        "offer-image-1.jpg",
-        "offer-image-2.jpg",
-        "offer-image-4.jpg",
-        "offer-image-8.jpg"
-  ],
-  "isPremium": true,
+  "city": "Paris",
+
+  "isPremium": false,
   "type": "hotel",
   "bedrooms": 5,
   "maxAdults": 3,
@@ -29,29 +21,29 @@ Content-Type: application/json
   "latitude": 50.837557,
   "longitude": 4.351697
 }
-
 ###
 
 ## Получить список предложений
-GET http://localhost:4000/rent-offers?count=4 HTTP/1.1
-
+GET http://localhost:4000/rent-offers HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InVzZXItbm8tYWR2ZXJ0aXNlckBuZXd0ZXN0LmNvbSIsImlkIjoiNjU0ZGUwZDc0MGY2M2ZjOTBkNDJkYjM2IiwiaWF0IjoxNjk5NjAyNjQ3LCJleHAiOjE2OTk2ODkwNDd9.misCE0E9dT_j6svyRjNGORpGIwk8xzAadTeFECfJf7M
 ###
 
 ## Получить список премиальных предложений города
 GET http://localhost:4000/rent-offers/premium?city=Paris HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InVzZXItbm8tYWR2ZXJ0aXNlckBuZXd0ZXN0LmNvbSIsImlkIjoiNjU0ZGUwZDc0MGY2M2ZjOTBkNDJkYjM2IiwiaWF0IjoxNjk5NjAyNjQ3LCJleHAiOjE2OTk2ODkwNDd9.misCE0E9dT_j6svyRjNGORpGIwk8xzAadTeFECfJf7M
 ###
 
 ## Получить всю информацию о предложении
-GET http://localhost:4000/rent-offers/65325655cef4c3c2a2d512a0 HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImctZWFzeUBiZWVub24uY29tIiwiaWQiOiI2NDc2MGIyYTZhODAzYTA5YWI4ZTlhMmYiLCJpYXQiOjE2ODcyNjE5NTcsImV4cCI6MTY4NzM0ODM1N30.1HClWaMKeh2u07Ts62-DjvsGwtYdFRG83moghpBfOjg
-
+GET http://localhost:4000/rent-offers/654dd85f028e050a642f719b HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InVzZXItbm8tYWR2ZXJ0aXNlckBuZXd0ZXN0LmNvbSIsImlkIjoiNjU0ZGUwZDc0MGY2M2ZjOTBkNDJkYjM2IiwiaWF0IjoxNjk5NjAyNjQ3LCJleHAiOjE2OTk2ODkwNDd9.misCE0E9dT_j6svyRjNGORpGIwk8xzAadTeFECfJf7M
 
 ###
 
 ## Обновить информацию о предложении
-PATCH http://localhost:4000/rent-offers/65325655cef4c3c2a2d512a0 HTTP/1.1
-X-token: 'somesupertoken'
+PATCH http://localhost:4000/rent-offers/654e4f0540f63fc90d42db54 HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InVzZXItbm8tYWR2ZXJ0aXNlckBuZXd0ZXN0LnJ1IiwiaWQiOiI2NTRlNGU3NjQwZjYzZmM5MGQ0MmRiNTEiLCJpYXQiOjE2OTk2MzA3ODYsImV4cCI6MTY5OTcxNzE4Nn0.vPRhAXEqXEjguRY0S3v3yfgDSCYzcyyPnBsed7eQybI
 Content-Type: application/json
+
 {
   "isPremium" : false,
   "bedrooms" : 2,
@@ -62,25 +54,77 @@ Content-Type: application/json
 ###
 
 ## Удалить предложение
-DELETE http://localhost:4000/rent-offers/65325655cef4c3c2a2d512a0 HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImctZWFzeUBiZWVub24uY29tIiwiaWQiOiI2NDc2MGIyYTZhODAzYTA5YWI4ZTlhMmYiLCJpYXQiOjE2ODcyNjE5NTcsImV4cCI6MTY4NzM0ODM1N30.1HClWaMKeh2u07Ts62-DjvsGwtYdFRG83moghpBfOjg
+DELETE http://localhost:4000/rent-offers/654e4f0540f63fc90d42db54 HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InVzZXItbm8tYWR2ZXJ0aXNlckBuZXd0ZXN0LnJ1IiwiaWQiOiI2NTRlNGU3NjQwZjYzZmM5MGQ0MmRiNTEiLCJpYXQiOjE2OTk2MzA3ODYsImV4cCI6MTY5OTcxNzE4Nn0.vPRhAXEqXEjguRY0S3v3yfgDSCYzcyyPnBsed7eQybI
 
 
 ###
 
 ##Получить список комментариев к офферу
-GET http://localhost:4000/rent-offers/65325655cef4c3c2a2d512a0/comments HTTP/1.1
+GET http://localhost:4000/rent-offers/654de0fd40f63fc90d42db38/comments HTTP/1.1
+
 ###
 
-## Загрузка preview
-POST  http://localhost:2000/rent-offers/64974b9cbc8fdadc5a227253/preview HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InRlc3RAbmV3dGVzdC5jb20iLCJpZCI6IjY0OTIxZTgxNGQwNTAzMWI5NGIzOGQ5ZCIsImlhdCI6MTY4NzYzNjg0MywiZXhwIjoxNjg3NzIzMjQzfQ.58iVuwbVZAXdwfo6m_aW1WV5jivW8R6tvNBPVjcWL2A
-Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
 
-------WebKitFormBoundary7MA4YWxkTrZu0gW
-Content-Disposition: form-data; name="preview-image"; filename="preview.png"
+## Получить избранные предложения пользователя
+GET http://localhost:4000/rent-offers/favorites/654e4e7640f63fc90d42db51/ HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InVzZXItbm8tYWR2ZXJ0aXNlckBuZXd0ZXN0LnJ1IiwiaWQiOiI2NTRlNGU3NjQwZjYzZmM5MGQ0MmRiNTEiLCJpYXQiOjE2OTk2MzA3ODYsImV4cCI6MTY5OTcxNzE4Nn0.vPRhAXEqXEjguRY0S3v3yfgDSCYzcyyPnBsed7eQybI
+
+###
+
+## Загрузка preview для оффера
+POST http://localhost:4000/rent-offers/654de0fd40f63fc90d42db38/upload/preview HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InVzZXItbm8tYWR2ZXJ0aXNlckBuZXd0ZXN0LnJ1IiwiaWQiOiI2NTRlNGU3NjQwZjYzZmM5MGQ0MmRiNTEiLCJpYXQiOjE2OTk2MzA3ODYsImV4cCI6MTY5OTcxNzE4Nn0.vPRhAXEqXEjguRY0S3v3yfgDSCYzcyyPnBsed7eQybI
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="preview"; filename="preview.png"
 Content-Type: image/png
 
 < Q:/preview.png
-------WebKitFormBoundary7MA4YWxkTrZu0gW--
+--boundary--
+###
+
+## Загрузка images для оффера
+POST http://localhost:4000/rent-offers/6498af6207c98cf4951723c4/upload/images HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InVzZXItbm8tYWR2ZXJ0aXNlckBuZXd0ZXN0LmNvbSIsImlkIjoiNjU0ZGRjZGQ0MGY2M2ZjOTBkNDJkYjJjIiwiaWF0IjoxNjk5NjAxNjI5LCJleHAiOjE2OTk2ODgwMjl9.2_HnUUp5QFu6wk620zYHiPsN93dviqd5v_ESPWDCLS8
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="images"; filename="1.jpg"
+Content-Type: image/jpeg
+
+< Q:/images/1.jpg
+
+--boundary
+Content-Disposition: form-data; name="images"; filename="2.jpg"
+Content-Type: image/jpeg
+
+< Q:/images/2.jpg
+
+--boundary
+Content-Disposition: form-data; name="images"; filename="3.jpg"
+Content-Type: image/jpeg
+
+< Q:/images/3.jpg
+
+--boundary
+Content-Disposition: form-data; name="images"; filename="4.jpg"
+Content-Type: image/jpeg
+
+< Q:/images/4.jpg
+
+--boundary
+Content-Disposition: form-data; name="images"; filename="5.jpg"
+Content-Type: image/jpeg
+
+< Q:/images/5.jpg
+
+--boundary
+Content-Disposition: form-data; name="images"; filename="6.jpg"
+Content-Type: image/jpeg
+
+< Q:/images/6.jpg
+
+--boundary--
 ###

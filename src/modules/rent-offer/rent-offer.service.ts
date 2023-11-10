@@ -279,12 +279,12 @@ export default class RentOfferService implements RentOfferServiceInterface {
     if (DEFAULT_STATIC_IMAGES.includes(offer.previewImage)) {
       return `${this.staticDirPath}/${offer.previewImage}`;
     }
-    return `${this.uploadDirPath}/${offer.advertiserId.id}/offers/${offer.id}/preview`;
+    return `${this.uploadDirPath}/${offer.advertiserId.id}/offers/${offer._id}/preview`;
   }
 
   private buildOfferImagesPath(offer: RentOfferEntity) {
     return offer.images.map((image) =>
-      `${this.uploadDirPath}/${offer.advertiserId.id}/offers/${offer.id}/images/${image}`
+      `${this.uploadDirPath}/${offer.advertiserId.id}/offers/${offer._id}/images/${image}`
     );
   }
 }

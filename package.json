@@ -9,14 +9,15 @@
   ],
   "main": "main.js",
   "scripts": {
-    "start": "npm run build && node ./dist/main.rest.js",
+    "start": "npm run build && node ./dist/src/main.rest.js",
     "start:dev": "nodemon",
     "build": "npm run clean && npm run compile",
     "lint": "eslint src/ --ext .ts",
     "compile": "tsc -p tsconfig.json",
     "clean": "rimraf dist",
     "ts": "ts-node",
-    "mock:server": "json-server ./mocks/mock-server-data.json --port 1444"
+    "mock:server": "json-server ./mocks/mock-server-data.json --port 1444",
+    "cli": "node ./dist/src/main.cli.js"
   },
   "devDependencies": {
     "@types/cors": "2.8.16",

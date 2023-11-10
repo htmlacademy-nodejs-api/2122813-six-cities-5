@@ -14,6 +14,7 @@ export type RestSchema = {
   UPLOAD_DIRECTORY_PATH: string;
   STATIC_DIRECTORY_PATH: string;
   JWT_SECRET: string;
+  CLI_CONNECT_DB_PATH: string;
 }
 
 export const configRestSchema = convict<RestSchema>({
@@ -81,6 +82,12 @@ export const configRestSchema = convict<RestSchema>({
     doc: 'Secret for sign JWT token',
     format: String,
     env: 'JWT_SECRET',
+    default: null
+  },
+  CLI_CONNECT_DB_PATH: {
+    doc: 'Path for connecting to DB via CLI',
+    format: String,
+    env: 'CLI_CONNECT_DB_PATH',
     default: null
   }
 });

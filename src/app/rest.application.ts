@@ -10,6 +10,7 @@ import { ControllerInterface } from '../core/controller/controller.interface.js'
 import { ExceptionFilterInterface } from '../core/exception-filters/exception-filter.interface.js';
 import { AuthenticateMiddleware } from '../core/middlewares/authenticate.middleware.js';
 import { getFullServerPath } from '../core/utils/common.js';
+import cors from 'cors';
 
 @injectable()
 export default class RestApplication {
@@ -46,10 +47,11 @@ export default class RestApplication {
   private async _initServer() {
     this.logger.info('Try to init server...');
 
+    const host = this.config.get('SERVICE_HOST');
     const port = this.config.get('SERVICE_PORT');
     this.expressApplication.listen(port);
 
-    this.logger.info(`Server started on ${getFullServerPath(this.config.get('SERVICE_HOST'), this.config.get('SERVICE_PORT'))}`);
+    this.logger.info(`Server started on ${getFullServerPath(host, port)}`);
   }
 
   private async _initRoutes() {
@@ -71,6 +73,7 @@ export default class RestApplication {
 
     const authenticateMiddleware = new AuthenticateMiddleware(this.config.get('JWT_SECRET'));
     this.expressApplication.use(authenticateMiddleware.execute.bind(authenticateMiddleware));
+    this.expressApplication.use(cors());
 
     this.logger.info('Global middleware initialization completed');
   }

@@ -1,5 +1,4 @@
 import {mkdir, access, readdir, unlink} from 'node:fs/promises';
-
 import path from 'node:path';
 
 import { NextFunction, Request, Response } from 'express';
@@ -45,10 +44,10 @@ export class UploadFileMiddleware implements MiddlewareInterface {
       }
     });
 
-    const uploadSingleFileMiddleware = multer({storage}).single(this.reqFieldName);
+    const uploadMiddleware = this.reqFieldName === 'images'
+      ? multer({storage}).array(this.reqFieldName, 6)
+      : multer({storage}).single(this.reqFieldName);
 
-    // const uploadMultipleFileMiddleware = multer({storage}).array(this.reqFieldName);
-
-    uploadSingleFileMiddleware(req, res, next);
+    uploadMiddleware(req, res, next);
   }
 }

@@ -28,8 +28,9 @@ import { DocumentModifyMiddleware } from '../../core/middlewares/document-modify
 import { ConfigInterface } from '../../core/config/config.interface.js';
 import { RestSchema } from '../../core/config/rest.schema.js';
 import { UploadFileMiddleware } from '../../core/middlewares/upload-file.middleware.js';
-import PreviewImageRDO from './rdo/preview-image.rdo.js';
+import RentOfferPreviewRDO from './rdo/rent-offer-preview.rdo.js';
 import UserService from '../user/user.service.js';
+import { RentOfferImagesRDO } from './rdo/rent-offer-images.rdo.js';
 
 type ParamsUserDetails = {
   userId: string;
@@ -102,8 +103,19 @@ export default class RentOfferController extends Controller {
       ]
     });
     this.addRoute({
-      path: '/:offerId/preview',
-      method: HttpMethod.Post,
+      path: '/favorites/:userId',
+      method: HttpMethod.Get,
+      handler:this.getFavorites,
+      middlewares: [
+        new PrivateRouteMiddleware(),
+        new ValidateObjectIdMiddleware('userId'),
+        new DocumentExistsMiddleware(this.userService, 'User', 'userId'),
+        new DocumentModifyMiddleware(this.userService, 'User', 'userId'),
+      ]
+    });
+    this.addRoute({
+      path: '/:offerId/upload/preview',
+      method: HttpMethod.Put,
       handler: this.uploadPreviewImage,
       middlewares: [
         new PrivateRouteMiddleware(),
@@ -114,14 +126,15 @@ export default class RentOfferController extends Controller {
       ]
     });
     this.addRoute({
-      path: '/favorites/:userId',
-      method: HttpMethod.Get,
-      handler:this.getFavorites,
+      path: '/:offerId/upload/images',
+      method: HttpMethod.Put,
+      handler: this.uploadOfferImages,
       middlewares: [
         new PrivateRouteMiddleware(),
-        new ValidateObjectIdMiddleware('userId'),
-        new DocumentExistsMiddleware(this.userService, 'User', 'userId'),
-        new DocumentModifyMiddleware(this.userService, 'User', 'userId'),
+        new ValidateObjectIdMiddleware('offerId'),
+        new DocumentExistsMiddleware(this.rentOfferService, 'Rent-offer', 'offerId'),
+        new DocumentModifyMiddleware(this.rentOfferService, 'Rent-offer', 'offerId'),
+        new UploadFileMiddleware(this.configService.get('UPLOAD_DIRECTORY_PATH'), 'images'),
       ]
     });
   }
@@ -148,7 +161,6 @@ export default class RentOfferController extends Controller {
         'RentOfferController'
       );
     }
-
     const userId = res.locals.user ? res.locals.user.id : '';
     const premiumOffers = await this.rentOfferService.findPremium(city.toString(), MAX_PREMIUM_OFFERS_COUNT, userId);
     const offersResponse = premiumOffers?.map((offer) => fillRDO(RentOfferBasicRDO, offer));
@@ -177,17 +189,32 @@ export default class RentOfferController extends Controller {
     this.ok(res, fillRDO(CommentRDO, comments));
   }
 
-  public async uploadPreviewImage(req: Request<ParamsOfferDetails>, res: Response): Promise<void> {
-    const {offerId} = req.params;
-    const updateDTO = { previewImage: req.file?.filename };
-    await this.rentOfferService.updateById(offerId, updateDTO);
-    this.created(res, fillRDO(PreviewImageRDO, {updateDTO}));
-  }
-
   public async getFavorites({params: {userId}}: Request<ParamsUserDetails>, res: Response): Promise<void> {
 
     const existedUserFavorites = await this.rentOfferService.findUserFavorites(userId);
     const favoritesResponse = existedUserFavorites?.map((offer) => fillRDO(RentOfferBasicRDO, offer));
     this.ok(res, favoritesResponse);
+  }
+
+  public async uploadPreviewImage(req: Request<ParamsOfferDetails, ResBody, UpdateRentOfferDTO>, res: Response): Promise<void> {
+    const {offerId} = req.params;
+
+    if (req.file) {
+      const uploadFile = {previewImage: req.file.filename};
+      const updatedOffer = await this.rentOfferService.updateById(offerId, uploadFile);
+
+      this.created(res, fillRDO(RentOfferPreviewRDO, updatedOffer));
+    }
+  }
+
+  public async uploadOfferImages(req: Request<ParamsOfferDetails, ResBody, UpdateRentOfferDTO>, res: Response): Promise<void> {
+    const {offerId} = req.params;
+    if (req.files) {
+      const uploadFiles = req.files as Express.Multer.File[];
+      const updateDTO = {images: uploadFiles.map((file) => file.filename)};
+
+      const updatedOffer = await this.rentOfferService.updateById(offerId, updateDTO);
+      this.created(res, fillRDO(RentOfferImagesRDO, updatedOffer));
+    }
   }
 }

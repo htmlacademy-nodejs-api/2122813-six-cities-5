@@ -1,6 +1,5 @@
-import { City } from './city.type.js';
+import { CityName } from './city.type.js';
 import { Goods } from './goods.type.js';
-import type { Location } from './location.type.js';
 import { OfferType } from './offer-type.type.js';
 import type { User } from './user.type.js';
 
@@ -8,11 +7,11 @@ export type RentOffer = {
   title: string,
   description: string,
   offerDate: Date,
-  city: City,
-  previewImage: string,
-  images: string[],
+  city: CityName,
+  previewImage?: string,
+  images?: string[],
   isPremium: boolean,
-  isFavorite: boolean,
+  isFavorite?: boolean,
   rating: number,
   type: OfferType,
   bedrooms: number,
@@ -20,5 +19,6 @@ export type RentOffer = {
   price: number,
   goods: Goods[],
   advertiser: User
-  location: Location,
+  latitude: number,
+  longitude: number
 }

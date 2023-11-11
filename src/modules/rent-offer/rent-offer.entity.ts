@@ -3,6 +3,7 @@ import { UserEntity } from '../user/user.entity.js';
 import { CityName } from '../../types/city.type.js';
 import { OfferType } from '../../types/offer-type.type.js';
 import { Goods } from '../../types/goods.type.js';
+import { DEFAULT_PREVIEW_IMAGE } from './rent-offer.constants.js';
 
 const {prop, modelOptions} = typegoose;
 
@@ -28,7 +29,7 @@ export class RentOfferEntity extends defaultClasses.TimeStamps {
   @prop({required: true, type: () => String, enum: CityName})
   public city!: CityName;
 
-  @prop({required: true})
+  @prop({required: true, default: DEFAULT_PREVIEW_IMAGE})
   public previewImage!: string;
 
   @prop({required: true, type: () => [String]})

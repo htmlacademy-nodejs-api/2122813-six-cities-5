@@ -7,10 +7,13 @@ import type { Mongoose } from 'mongoose';
 import { DatabaseClientInterface } from './database-client.interface.js';
 import { AppComponent } from '../../types/app-component.type.js';
 import { LoggerInterface } from '../logger/logger.interface.js';
+import ConfigService from '../config/config.service.js';
 
-const RETRY_COUNT = 2;
-const RETRY_TIMEOUT = 1000;
 const DB_CONNECTION_TIMEOUT = 5000;
+const RETRY = {
+  COUNT: 5,
+  TIMEOUT: 1000
+};
 
 @injectable()
 export default class MongoClientService implements DatabaseClientInterface {
@@ -18,19 +21,20 @@ export default class MongoClientService implements DatabaseClientInterface {
   private isConnected = false;
 
   constructor(
-    @inject(AppComponent.LoggerInterface) private readonly logger: LoggerInterface
+    @inject(AppComponent.LoggerInterface) private readonly logger: LoggerInterface,
+    @inject(AppComponent.ConfigInterface) private readonly configService: ConfigService
   ) {}
 
   private async _connectWithRetry(uri: string): Promise<Mongoose> {
     let attempt = 0;
-    while (attempt < RETRY_COUNT) {
+    while (attempt < RETRY.COUNT) {
       try {
         return await mongoose.connect(uri, {serverSelectionTimeoutMS: DB_CONNECTION_TIMEOUT});
       } catch (error) {
         attempt++;
         this.logger.error(`Failed to connect to the database. Attempt ${attempt}`);
-        await setTimeout(RETRY_TIMEOUT);
-        this.logger.error(`${attempt !== RETRY_COUNT ? 'Reconnecting...' : 'Attempts limit exceeded.'}`);
+        await setTimeout(RETRY.TIMEOUT);
+        this.logger.error(`${attempt !== RETRY.COUNT ? 'Reconnecting...' : 'Attempts limit exceeded.'}`);
       }
     }
 
@@ -49,7 +53,7 @@ export default class MongoClientService implements DatabaseClientInterface {
     this.mongooseInstance = null;
   }
 
-  public async connect(uri: string): Promise<void> {
+  public async connect(uri = this.configService.get('CLI_CONNECT_DB_PATH')): Promise<void> {
     if (this.isConnected) {
       throw new Error('MongoDB client already connected');
     }

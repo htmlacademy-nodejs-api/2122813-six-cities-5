@@ -12,6 +12,9 @@ export const AppComponent = {
   CommentModel: Symbol.for('CommentModel'),
   RentOfferController: Symbol.for('RentOfferController'),
   UserController: Symbol.for('UserController'),
-  ExceptionFilterInterface: Symbol.for('ExceptionFilterInterface'),
   CommentController: Symbol.for('CommentController'),
+  HttpErrorExceptionFilter: Symbol.for('HttpErrorExceptionFilter'),
+  DefaultExceptionFilter: Symbol.for('DefaultExceptionFilter'),
+  ValidationExceptionFilter: Symbol.for('ValidationExceptionFilter'),
+  AuthorizationExceptionFilter: Symbol.for('AuthorizationExceptionFilter')
 } as const;

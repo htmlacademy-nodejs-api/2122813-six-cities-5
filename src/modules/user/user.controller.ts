@@ -13,7 +13,6 @@ import { ConfigInterface } from '../../core/config/config.interface.js';
 import { RestSchema } from '../../core/config/rest.schema.js';
 import UserAuthRDO from './rdo/user-auth.rdo.js';
 import RentOfferService from '../rent-offer/rent-offer.service.js';
-import RentOfferBasicRDO from '../rent-offer/rdo/rent-offer-basic.rdo.js';
 import CreateUserDTO from './dto/create-user.dto.js';
 import HttpError from '../../core/errors/http-error.js';
 import { ValidateObjectIdMiddleware } from '../../core/middlewares/validate-id.middleware.js';
@@ -21,31 +20,32 @@ import { ValidateDTOMiddleware } from '../../core/middlewares/validate-dto.middl
 import AuthUserDTO from './dto/auth-user.dto.js';
 import { DocumentExistsMiddleware } from '../../core/middlewares/document-exists.middleware.js';
 import { UploadFileMiddleware } from '../../core/middlewares/upload-file.middleware.js';
-import { ResBody } from '../../types/request.type.js';
+import { ResBody } from '../../types/default-response.type.js';
 import { JWT_ALGORITHM } from './user.constants.js';
 import { PrivateRouteMiddleware } from '../../core/middlewares/private-route.middleware.js';
 import { DocumentModifyMiddleware } from '../../core/middlewares/document-modify.middleware.js';
 import UserBasicRDO from './rdo/user-basic.rdo.js';
-import { RentOfferFullRDO } from '../rent-offer/rdo/rent-offer-full.rdo.js';
+import AuthError from '../../core/errors/auth-error.js';
+import UserAvatarRDO from './rdo/user-avatar.rdo.js';
+import UpdateUserDTO from './dto/update-user.dto.js';
+import RentOfferBasicRDO from '../rent-offer/rdo/rent-offer-basic.rdo.js';
 
 type ParamsUserDetails = {
   userId: string;
 } | ParamsDictionary;
-
 type ParamsFavoriteOfferDetails = {
   userId: string;
   offerId: string;
 } | ParamsDictionary;
-
 @injectable()
 export default class UserController extends Controller {
   constructor(
-  @inject(AppComponent.LoggerInterface) logger: LoggerInterface,
+  @inject(AppComponent.LoggerInterface) protected readonly logger: LoggerInterface,
   @inject(AppComponent.UserServiceInterface) private readonly userService: UserServiceInterface,
   @inject(AppComponent.RentOfferServiceInterface) private readonly rentOfferService: RentOfferService,
-  @inject(AppComponent.ConfigInterface) private readonly configService: ConfigInterface<RestSchema>
+  @inject(AppComponent.ConfigInterface) protected readonly configService: ConfigInterface<RestSchema>
   ) {
-    super(logger);
+    super(logger, configService);
     this.logger.info('Register routes for User Controller…');
     this.addRoute({
       path: '/register',
@@ -65,27 +65,15 @@ export default class UserController extends Controller {
       handler: this.requestAuth,
       middlewares: [new ValidateDTOMiddleware(AuthUserDTO)]
     });
-    this.addRoute({path: '/logout', method: HttpMethod.Delete, handler: this.logout});
     this.addRoute({
-      path: '/:userId/avatar',
-      method: HttpMethod.Put,
-      handler: this.loadAvatar,
+      path: '/:userId/upload/avatar',
+      method: HttpMethod.Post,
+      handler: this.uploadAvatar,
       middlewares: [
         new ValidateObjectIdMiddleware('userId'),
         new DocumentModifyMiddleware(this.userService, 'User', 'userId'),
         new DocumentExistsMiddleware(this.userService, 'User', 'userId'),
-        new UploadFileMiddleware(this.configService.get('UPLOAD_DIRECTORY'), 'avatar')
-      ]
-    });
-    this.addRoute({
-      path: '/:userId/favorites/',
-      method: HttpMethod.Get,
-      handler:this.getFavorites,
-      middlewares: [
-        new PrivateRouteMiddleware(),
-        new ValidateObjectIdMiddleware('userId'),
-        new DocumentModifyMiddleware(this.userService, 'User', 'userId'),
-        new DocumentExistsMiddleware(this.userService, 'User', 'userId')
+        new UploadFileMiddleware(this.configService.get('UPLOAD_DIRECTORY_PATH'), 'avatar')
       ]
     });
     this.addRoute({
@@ -101,12 +89,10 @@ export default class UserController extends Controller {
         new DocumentExistsMiddleware(this.userService, 'User', 'userId')
       ]
     });
-
   }
 
   public async register({body: registerData}: Request<ParamsDictionary, ResBody, CreateUserDTO>, res: Response): Promise<void> {
     const existUser = await this.userService.findByEmail(registerData.email);
-
     if (existUser) {
       throw new HttpError(
         StatusCodes.CONFLICT,
@@ -114,9 +100,7 @@ export default class UserController extends Controller {
         'UserController'
       );
     }
-
     const newUser = await this.userService.create(registerData, this.configService.get('SALT'));
-
     const token = await createJWT(
       JWT_ALGORITHM,
       this.configService.get('JWT_SECRET'),
@@ -125,30 +109,31 @@ export default class UserController extends Controller {
         id: newUser.id
       }
     );
-
     this.created(res, fillRDO(UserAuthRDO, {...newUser.toObject(), token}));
   }
 
   public async checkAuth(_req: Request, res: Response): Promise<void> {
-
     const {email} = res.locals.user;
 
     const foundedUser = await this.userService.findByEmail(email);
-    this.ok(res, fillRDO(UserBasicRDO, foundedUser));
-  }
 
-  public async requestAuth({body: authData}: Request<ParamsDictionary, ResBody, AuthUserDTO>, res: Response): Promise<void> {
-
-    const existUser = await this.userService.verifyUser(authData, this.configService.get('SALT'));
-
-    if (!existUser) {
-      throw new HttpError(
-        StatusCodes.UNAUTHORIZED,
+    if (!foundedUser) {
+      throw new AuthError(
         'Wrong authentication data. Check your login and password.',
         'UserController'
       );
     }
+    this.ok(res, fillRDO(UserBasicRDO, foundedUser));
+  }
 
+  public async requestAuth({body: authData}: Request<ParamsDictionary, ResBody, AuthUserDTO>, res: Response): Promise<void> {
+    const existUser = await this.userService.verifyUser(authData, this.configService.get('SALT'));
+    if (!existUser) {
+      throw new AuthError(
+        'Wrong authentication data. Check your login and password.',
+        'UserController'
+      );
+    }
     const token = await createJWT(
       JWT_ALGORITHM,
       this.configService.get('JWT_SECRET'),
@@ -157,18 +142,19 @@ export default class UserController extends Controller {
         id: existUser.id
       }
     );
-
     this.ok(res, fillRDO(UserAuthRDO, {...existUser.toObject(), token}));
   }
 
-  public async loadAvatar(req: Request, res: Response): Promise<void> {
-    this.created(res, {
-      filepath: req.file?.path
-    });
-  }
+  public async uploadAvatar(req: Request<ParamsUserDetails, ResBody, UpdateUserDTO>, res: Response): Promise<void> {
 
-  public async logout(_req: Request, _res: Response): Promise<void> {
-    throw new HttpError(StatusCodes.NOT_IMPLEMENTED, 'not implemented');
+    const {userId} = req.params;
+
+    if (req.file) {
+      const uploadFile = {avatar: req.file.filename};
+      const updatedUser = await this.userService.updateById(userId, uploadFile);
+
+      this.created(res, fillRDO(UserAvatarRDO, updatedUser));
+    }
   }
 
   public async updateFavoriteStatus({params: {userId, offerId}, query: {isFav}}: Request<ParamsFavoriteOfferDetails>, res: Response): Promise<void> {
@@ -182,14 +168,7 @@ export default class UserController extends Controller {
 
     const status = isFav === '1';
     await this.userService.changeFavoriteStatus(userId, offerId, status);
-    const updatedOffer = await this.rentOfferService.findById(offerId, userId);
-    this.ok(res, fillRDO(RentOfferFullRDO, updatedOffer));
-  }
-
-  public async getFavorites({params: {userId}}: Request<ParamsUserDetails>, res: Response): Promise<void> {
-
-    const existedUserFavorites = await this.userService.findUserFavorites(userId);
-    const favoritesResponse = existedUserFavorites?.map((offer) => fillRDO(RentOfferBasicRDO, offer));
-    this.ok(res, favoritesResponse);
+    const favorites = await this.rentOfferService.findUserFavorites(userId);
+    this.ok(res, fillRDO(RentOfferBasicRDO, favorites));
   }
 }

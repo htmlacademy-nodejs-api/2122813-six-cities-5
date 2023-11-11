@@ -10,4 +10,5 @@
 coverage
 *.log
 .env
-/users-uploads/
+/uploads/
+/static/

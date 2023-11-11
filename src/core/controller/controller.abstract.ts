@@ -2,23 +2,21 @@ import { Response, Router } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { injectable } from 'inversify';
 import asyncHandler from 'express-async-handler';
-
 import { ControllerInterface } from './controller.interface.js';
 import { LoggerInterface } from '../logger/logger.interface.js';
 import { RouteInterface } from '../../types/route.interface.js';
+import { ConfigInterface } from '../config/config.interface.js';
+import { RestSchema } from '../config/rest.schema.js';
 
 @injectable()
 export abstract class Controller implements ControllerInterface {
-  private readonly _router: Router;
+  public readonly router: Router;
 
   constructor(
-    protected readonly logger: LoggerInterface
+    protected readonly logger: LoggerInterface,
+    protected readonly configService: ConfigInterface<RestSchema>
   ) {
-    this._router = Router();
-  }
-
-  get router() {
-    return this._router;
+    this.router = Router();
   }
 
   public addRoute(route: RouteInterface) {
@@ -29,7 +27,7 @@ export abstract class Controller implements ControllerInterface {
     );
 
     const allHandlers = middlewares ? [...middlewares, routeHandler] : routeHandler;
-    this._router[method](path, allHandlers);
+    this.router[method](path, allHandlers);
 
     this.logger.info(`Route registered: ${method.toUpperCase()} ${path}`);
   }

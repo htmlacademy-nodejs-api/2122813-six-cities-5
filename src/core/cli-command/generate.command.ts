@@ -1,10 +1,12 @@
 import got from 'got';
 
 import { CliCommandInterface } from './cli-command.interface.js';
-import OfferGenerator from '../../modules/offer-generator/offer-generator.js';
+import OfferGenerator from '../../modules/mock-generators/offer-generator.js';
 import TSVFileWriter from '../file-writer/ftsv-file-writer.js';
 
 import type { MockData } from '../../types/mock-data.type.js';
+
+const RADIX = 10;
 
 export default class GenerateCommand implements CliCommandInterface {
   public readonly name = '--generate';
@@ -12,7 +14,7 @@ export default class GenerateCommand implements CliCommandInterface {
 
   public async execute(...params: string[]): Promise<void> {
     const [count, filepath, url] = params;
-    const offerCount = Number.parseInt(count, 10);
+    const offerCount = Number.parseInt(count, RADIX);
 
     this.initialData = await got.get(url).json().catch(() => {
       throw new Error(url ? `Can't fetch data from ${url}.` : 'incorrect filepath');

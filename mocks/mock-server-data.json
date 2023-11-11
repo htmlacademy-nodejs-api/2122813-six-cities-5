@@ -25,25 +25,6 @@
       "A new spacious villa, one floor. All commodities, jacuzzi and beautiful scenery. Ideal for families or friends.",
       "The best view of the city center from the balcony. You can order a cup of coffee at one of dozens of restaurants nearby. Friendly neighbors guaranteed!"
     ],
-    "offerImages": [
-      "offer-image-1.jpg",
-      "offer-image-2.jpg",
-      "offer-image-3.jpg",
-      "offer-image-4.jpg",
-      "offer-image-5.jpg",
-      "offer-image-6.jpg",
-      "offer-image-7.jpg",
-      "offer-image-8.jpg",
-      "offer-image-9.jpg"
-    ],
-    "previewImages": [
-      "preview-image-1.jpg",
-      "preview-image-2.jpg",
-      "preview-image-3.jpg",
-      "preview-image-4.jpg",
-      "preview-image-5.jpg",
-      "preview-image-6.jpg"
-    ],
     "usernames": [
       "Eloise",
       "Beatrice",
@@ -66,14 +47,6 @@
       "lawl@rofl.org",
       "g-easy@beenon.com",
       "flawa@freeflaw.ja"
-    ],
-    "avatars": [
-      "user-avatar-1.jpg",
-      "user-avatar-2.jpg",
-      "user-avatar-3.jpg",
-      "user-avatar-4.jpg",
-      "user-avatar-5.jpg",
-      "user-avatar-6.jpg"
     ],
     "latitudes": [
       "51.243402",

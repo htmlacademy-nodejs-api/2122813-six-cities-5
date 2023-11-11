@@ -2,16 +2,17 @@ import { ArrayMaxSize, ArrayMinSize, ArrayUnique, IsArray, IsBoolean, IsEnum, Is
 import { CityName } from '../../../types/city.type.js';
 import { Goods } from '../../../types/goods.type.js';
 import { OfferType } from '../../../types/offer-type.type.js';
+import { ADULTS_COUNT, BEDROOMS_COUNT, DESCRIPTION_LENGTH, IMAGES_COUNT, MIN_GOODS_COUNT, OFFER_PRICE, TITLE_LENGTH } from '../rent-offer.constants.js';
 
 export default class UpdateRentOfferDTO {
   @IsOptional()
-  @MinLength(10, {message: 'Minimum title length must be 10 chars'})
-  @MaxLength(100, {message: 'Maximum title length must be 100 chars'})
+  @MinLength(TITLE_LENGTH.MIN, {message: `Minimum title length must be ${TITLE_LENGTH.MIN} chars`})
+  @MaxLength(TITLE_LENGTH.MAX, {message: `Maximum title length must be ${TITLE_LENGTH.MAX} chars`})
   public title?: string;
 
   @IsOptional()
-  @MinLength(20, {message: 'Minimum description length must be 20 chars'})
-  @MaxLength(1024, {message: 'Maximum description length must be 1024 chars'})
+  @MinLength(DESCRIPTION_LENGTH.MIN, {message: `Minimum description length must be ${DESCRIPTION_LENGTH.MIN} chars`})
+  @MaxLength(DESCRIPTION_LENGTH.MAX, {message: `Maximum description length must be ${DESCRIPTION_LENGTH.MAX} chars`})
   public description?: string;
 
   @IsOptional()
@@ -24,8 +25,8 @@ export default class UpdateRentOfferDTO {
 
   @IsOptional()
   @IsArray({message: '"images" field must be an array'})
-  @ArrayMinSize(6, {message: '"images" field must contain 6 image files'})
-  @ArrayMaxSize(6, {message: '"images" field must contain 6 image files'})
+  @ArrayMinSize(IMAGES_COUNT, {message: `"images" field must contain ${IMAGES_COUNT} image files`})
+  @ArrayMaxSize(IMAGES_COUNT, {message: `"images" field must contain ${IMAGES_COUNT} image files`})
   @IsMimeType({each: true, message: 'must be a valid image file'})
   public images?: string[];
 
@@ -39,27 +40,27 @@ export default class UpdateRentOfferDTO {
 
   @IsOptional()
   @IsInt({message: 'bedrooms count must be an integer value'})
-  @Min(1, {message: 'bedrooms min count is 1'})
-  @Max(8, {message: 'bedrooms max count is 8'})
+  @Min(BEDROOMS_COUNT.MIN, {message: `bedrooms min count is ${BEDROOMS_COUNT.MIN}`})
+  @Max(BEDROOMS_COUNT.MAX, {message: `bedrooms max count is ${BEDROOMS_COUNT.MAX}`})
   public bedrooms?: number;
 
   @IsOptional()
   @IsInt({message: 'maxAdults count must be an integer value'})
-  @Min(1, {message: 'maxAdults min count is 1'})
-  @Max(10, {message: 'maxAdults max count is 10'})
+  @Min(ADULTS_COUNT.MIN, {message: `maxAdults min count is ${ADULTS_COUNT.MIN}`})
+  @Max(ADULTS_COUNT.MAX, {message: `maxAdults max count is ${ADULTS_COUNT.MAX}`})
   public maxAdults?: number;
 
   @IsOptional()
   @IsInt({message: 'price must be an integer value'})
-  @Min(100, {message: 'price min count is 100'})
-  @Max(100_000, {message: 'price max count is 100_000'})
+  @Min(OFFER_PRICE.MIN, {message: `price min count is ${OFFER_PRICE.MIN}`})
+  @Max(OFFER_PRICE.MAX, {message: `price max count is ${OFFER_PRICE.MAX}`})
   public price?: number;
 
   @IsOptional()
   @IsArray({message: 'field "goods" must be an array'})
   @IsEnum(Goods, {each: true, message: 'each item in "goods" array must be one of the following: "Breakfast", "Air conditioning", "Laptop", "Friendly workspace", "Baby seat", "Washer", "Towels", "Fridge"'})
   @ArrayUnique({message: 'all items in "goods" array must be unique'})
-  @ArrayMinSize(1)
+  @ArrayMinSize(MIN_GOODS_COUNT, {message: `field "goods" must contain ${MIN_GOODS_COUNT} items count`})
   public goods?: Goods[];
 
   @IsOptional()

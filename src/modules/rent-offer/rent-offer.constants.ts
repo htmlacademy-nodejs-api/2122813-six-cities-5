@@ -40,3 +40,32 @@ export const Cities: Record<string, City> = {
 
 export const DEFAULT_OFFERS_COUNT = 60;
 export const MAX_PREMIUM_OFFERS_COUNT = 3;
+export const DEFAULT_PREVIEW_IMAGE = 'default-preview.png';
+
+export enum TITLE_LENGTH {
+  MIN = 10,
+  MAX = 100
+}
+
+export enum DESCRIPTION_LENGTH {
+  MIN = 20,
+  MAX = 1024
+}
+
+export enum BEDROOMS_COUNT {
+  MIN = 1,
+  MAX = 8
+}
+
+export enum ADULTS_COUNT {
+  MIN = 1,
+  MAX = 10
+}
+
+export enum OFFER_PRICE {
+  MIN = 100,
+  MAX = 100_000
+}
+
+export const MIN_GOODS_COUNT = 1;
+export const IMAGES_COUNT = 6;

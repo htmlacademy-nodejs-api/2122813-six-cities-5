@@ -10,6 +10,6 @@ export default class UserBasicRDO {
   @Expose()
   public status!: string;
 
-  @Expose()
+  @Expose({name: 'avatar'})
   public avatarPath!: string;
 }

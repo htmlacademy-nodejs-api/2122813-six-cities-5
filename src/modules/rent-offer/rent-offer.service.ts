@@ -7,26 +7,45 @@ import { RentOfferEntity } from './rent-offer.entity.js';
 import CreateRentOfferDTO from './dto/create-rent-offer.dto.js';
 import UpdateRentOfferDTO from './dto/update-rent-offer.dto.js';
 import { SortType } from '../../types/sort-order.type.js';
+import { DEFAULT_PREVIEW_IMAGE } from './rent-offer.constants.js';
+import { getFullServerPath } from '../../core/utils/common.js';
+import { ConfigInterface } from '../../core/config/config.interface.js';
+import { RestSchema } from '../../core/config/rest.schema.js';
+import { UserEntity } from '../user/user.entity.js';
+import { DEFAULT_STATIC_IMAGES } from '../../app/rest.constants.js';
 
 @injectable()
 export default class RentOfferService implements RentOfferServiceInterface {
+
   constructor(
     @inject(AppComponent.LoggerInterface) private readonly logger: LoggerInterface,
-    @inject(AppComponent.RentOfferModel) private readonly rentOfferModel: types.ModelType<RentOfferEntity>
+    @inject(AppComponent.RentOfferModel) private readonly rentOfferModel: types.ModelType<RentOfferEntity>,
+    @inject(AppComponent.ConfigInterface) protected readonly configService: ConfigInterface<RestSchema>
   ) {}
 
   public async create(dto: CreateRentOfferDTO): Promise<DocumentType<RentOfferEntity>> {
-    const rentOfferEntry = await this.rentOfferModel.create(dto).then((offer) => {
+    let rentOffer = await this.rentOfferModel.create({...dto, previewImage: DEFAULT_PREVIEW_IMAGE}).then((offer) => {
       offer.isFavorite = false;
       return offer;
     });
+
+    rentOffer = await rentOffer.populate(['advertiserId']);
+
+    Object.assign(rentOffer, {
+      previewImage: this.buildPreviewImagePath(rentOffer),
+      images: this.buildOfferImagesPath(rentOffer)
+    });
+
+    Object.assign(rentOffer.advertiserId, {avatar: this.buildAvatarPath(rentOffer.advertiserId as UserEntity)});
+
     this.logger.info(`New offer created: ${dto.title}`);
-    return rentOfferEntry.populate(['advertiserId']);
+
+    return rentOffer;
   }
 
   public async findById(offerId: string, userId?: string): Promise<DocumentType<RentOfferEntity> | null> {
 
-    let result = await this.rentOfferModel.aggregate([
+    let result = await this.rentOfferModel.aggregate<DocumentType<RentOfferEntity>>([
       { $match: { $expr: { $eq: [offerId, { $toString: '$_id'}] } } },
       {
         $lookup: {
@@ -58,12 +77,23 @@ export default class RentOfferService implements RentOfferServiceInterface {
       },
       { $unset: 'user' },
     ]).exec();
+
     result = await this.rentOfferModel.populate(result, {path: 'advertiserId'});
-    return result[0];
+    const rentOffer = result[0];
+
+    Object.assign(rentOffer, {
+      previewImage: this.buildPreviewImagePath(rentOffer),
+      images: this.buildOfferImagesPath(rentOffer)
+    });
+
+    Object.assign(rentOffer.advertiserId, {avatar: this.buildAvatarPath(rentOffer.advertiserId as UserEntity)});
+
+    return rentOffer;
   }
 
   public async find(offersCount: number, userId?: string): Promise<DocumentType<RentOfferEntity>[]> {
-    return this.rentOfferModel.aggregate([
+
+    return this.rentOfferModel.aggregate<DocumentType<RentOfferEntity>>([
       {
         $lookup: {
           from: 'users',
@@ -95,7 +125,12 @@ export default class RentOfferService implements RentOfferServiceInterface {
       { $unset: 'user' },
       { $sort: { createdAt: SortType.Down }},
       { $limit: offersCount}
-    ]).exec();
+    ]).exec().then((offers) => {
+      offers.forEach((offer) => {
+        Object.assign(offer, {previewImage: this.buildPreviewImagePath(offer)});
+      });
+      return offers;
+    });
   }
 
   public async canModify(userId: string, offerId: string): Promise<boolean> {
@@ -115,11 +150,12 @@ export default class RentOfferService implements RentOfferServiceInterface {
   }
 
   public async findPremium(city: string, offersCount: number, userId?: string): Promise<DocumentType<RentOfferEntity>[]> {
-    return this.rentOfferModel.aggregate([
+
+    return this.rentOfferModel.aggregate<DocumentType<RentOfferEntity>>([
       { $match:
         {$and:
           [
-            { $expr: {$eq: ['$city.name', city] } },
+            { $expr: {$eq: ['$city', city] } },
             { $expr: {$eq: ['$isPremium', true] } }
           ]
         }
@@ -155,7 +191,38 @@ export default class RentOfferService implements RentOfferServiceInterface {
       { $unset: 'user' },
       { $sort: { createdAt: SortType.Down }},
       { $limit: offersCount}
-    ]).exec();
+    ]).exec().then((offers) => {
+      offers.forEach((offer) => {
+        Object.assign(offer, {previewImage: this.buildPreviewImagePath(offer)});
+      });
+      return offers;
+    });
+  }
+
+  public async findUserFavorites(userId: string): Promise<DocumentType<RentOfferEntity>[] | null> {
+
+    return this.rentOfferModel.aggregate<DocumentType<RentOfferEntity>>([
+      {
+        $lookup: {
+          from: 'users',
+          pipeline: [
+            { $match: { $expr: {$eq: [userId, { $toString: '$_id'}] } } },
+            { $project: {_id: false, favorites: true}},
+          ],
+          as: 'user'
+        }
+      },
+      { $unwind: { path: '$user', preserveNullAndEmptyArrays: true } },
+      { $match: { $expr: {$in: ['$_id', '$user.favorites'] } } },
+      { $addFields: { isFavorite: true } },
+      { $unset: 'user' },
+      { $sort: { createdAt: SortType.Down }},
+    ]).exec().then((offers) => {
+      offers.forEach((offer) => {
+        Object.assign(offer, {previewImage: this.buildPreviewImagePath(offer)});
+      });
+      return offers;
+    });
   }
 
   public async incCommentCount(offerId: string): Promise<DocumentType<RentOfferEntity> | null> {
@@ -182,12 +249,42 @@ export default class RentOfferService implements RentOfferServiceInterface {
       { $unwind: { path: '$commentsRatings' } },
       { $project: {_id: false, commentsRatings: true}}
     ]).exec().then((res) => res[0].commentsRatings.rating);
-
     const newRating = result.toFixed(1);
     return this.rentOfferModel.findByIdAndUpdate(offerId, {'$set': { rating: newRating}});
   }
 
   public async exists(offerId: string): Promise<boolean> {
     return (await this.rentOfferModel.exists({_id: offerId})) !== null;
+  }
+
+  private get uploadDirPath() {
+    const fullServerPath = getFullServerPath(this.configService.get('SERVICE_HOST'), this.configService.get('SERVICE_PORT'));
+    return `${fullServerPath}/${this.configService.get('UPLOAD_DIRECTORY_PATH')}`;
+  }
+
+  private get staticDirPath() {
+    const fullServerPath = getFullServerPath(this.configService.get('SERVICE_HOST'), this.configService.get('SERVICE_PORT'));
+    return `${fullServerPath}/${this.configService.get('STATIC_DIRECTORY_PATH')}`;
+  }
+
+  private buildAvatarPath(advertiser: UserEntity) {
+    if (DEFAULT_STATIC_IMAGES.includes(advertiser.avatar)) {
+      return `${this.staticDirPath}/${advertiser.avatar}`;
+    }
+
+    return `${this.uploadDirPath}/${advertiser.id}/avatar/${advertiser.avatar}`;
+  }
+
+  private buildPreviewImagePath(offer: RentOfferEntity) {
+    if (DEFAULT_STATIC_IMAGES.includes(offer.previewImage)) {
+      return `${this.staticDirPath}/${offer.previewImage}`;
+    }
+    return `${this.uploadDirPath}/${offer.advertiserId.id}/offers/${offer._id}/preview`;
+  }
+
+  private buildOfferImagesPath(offer: RentOfferEntity) {
+    return offer.images.map((image) =>
+      `${this.uploadDirPath}/${offer.advertiserId.id}/offers/${offer._id}/images/${image}`
+    );
   }
 }

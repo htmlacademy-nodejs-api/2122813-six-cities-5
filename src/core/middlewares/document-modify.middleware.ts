@@ -17,7 +17,7 @@ export class DocumentModifyMiddleware implements MiddlewareInterface {
     const owner = res.locals.user;
     if (!await this.service.canModify(owner.id, documentId)) {
       throw new HttpError(
-        StatusCodes.CONFLICT,
+        StatusCodes.BAD_REQUEST,
         `You can't modify ${this.entityName} with ${documentId}.`,
         'DocumentModifyMiddleware'
       );

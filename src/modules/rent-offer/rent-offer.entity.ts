@@ -1,6 +1,7 @@
 import typegoose, { Ref, defaultClasses } from '@typegoose/typegoose';
+
 import { UserEntity } from '../user/user.entity.js';
-import { CityName } from '../../types/city.type.js';
+import { CityNames } from '../../types/city.type.js';
 import { OfferType } from '../../types/offer-type.type.js';
 import { Goods } from '../../types/goods.type.js';
 import { DEFAULT_PREVIEW_IMAGE } from './rent-offer.constants.js';
@@ -17,6 +18,7 @@ export interface RentOfferEntity extends defaultClasses.Base {}
 })
 // eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
 export class RentOfferEntity extends defaultClasses.TimeStamps {
+
   @prop({required: true, trim: true})
   public title!: string;
 
@@ -26,8 +28,8 @@ export class RentOfferEntity extends defaultClasses.TimeStamps {
   @prop({default: new Date()})
   public offerDate?: Date;
 
-  @prop({required: true, type: () => String, enum: CityName})
-  public city!: CityName;
+  @prop({required: true, type: () => String, enum: CityNames})
+  public city!: CityNames;
 
   @prop({required: true, default: DEFAULT_PREVIEW_IMAGE})
   public previewImage!: string;

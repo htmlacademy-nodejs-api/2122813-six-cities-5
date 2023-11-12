@@ -1,9 +1,9 @@
-import { ArrayMaxSize, ArrayMinSize, ArrayUnique, IsArray, IsBoolean, IsEnum, IsInt, IsLatitude, IsLongitude, IsMimeType, IsOptional, Max, MaxLength, Min, MinLength } from 'class-validator';
-import { CityName } from '../../../types/city.type.js';
+import { ArrayMaxSize, ArrayMinSize, ArrayUnique, IsArray, IsBoolean, IsDateString, IsEnum, IsInt, IsLatitude, IsLongitude, IsOptional, IsUrl, Max, MaxLength, Min, MinLength } from 'class-validator';
+
+import { CityNames } from '../../../types/city.type.js';
 import { Goods } from '../../../types/goods.type.js';
 import { OfferType } from '../../../types/offer-type.type.js';
 import { ADULTS_COUNT, BEDROOMS_COUNT, DESCRIPTION_LENGTH, IMAGES_COUNT, MIN_GOODS_COUNT, OFFER_PRICE, TITLE_LENGTH } from '../rent-offer.constants.js';
-
 export default class UpdateRentOfferDTO {
   @IsOptional()
   @MinLength(TITLE_LENGTH.MIN, {message: `Minimum title length must be ${TITLE_LENGTH.MIN} chars`})
@@ -16,18 +16,22 @@ export default class UpdateRentOfferDTO {
   public description?: string;
 
   @IsOptional()
-  @IsEnum(CityName, {message: 'city must be only one of the following: "Paris", "Cologne", "Brussels", "Amsterdam", "Hamburg", "Dusseldorf"'})
-  public city?: CityName;
+  @IsDateString({}, {message: 'offerDate must be valid ISO date'})
+  public offerDate?: Date;
 
   @IsOptional()
-  @IsMimeType({message: 'preview must be a valid image file'})
+  @IsEnum(CityNames, {message: `city must be only one of the following: ${Object.values(CityNames).join(', ')}`})
+  public city?: CityNames;
+
+  @IsOptional()
+  @IsUrl({}, {message: 'preview image must be a valid URL string'})
   public previewImage?: string;
 
   @IsOptional()
   @IsArray({message: '"images" field must be an array'})
   @ArrayMinSize(IMAGES_COUNT, {message: `"images" field must contain ${IMAGES_COUNT} image files`})
   @ArrayMaxSize(IMAGES_COUNT, {message: `"images" field must contain ${IMAGES_COUNT} image files`})
-  @IsMimeType({each: true, message: 'must be a valid image file'})
+  @IsUrl({}, {each: true, message: 'image must be a valid URL string'})
   public images?: string[];
 
   @IsOptional()
@@ -35,7 +39,7 @@ export default class UpdateRentOfferDTO {
   public isPremium?: boolean;
 
   @IsOptional()
-  @IsEnum(OfferType, {message: 'offer type must be only one of the following: "apartment", "house", "room", "hotel"'})
+  @IsEnum(OfferType, {message: `offer type must be only one of the following: ${Object.values(OfferType).join(', ')}`})
   public type?: OfferType;
 
   @IsOptional()
@@ -58,7 +62,7 @@ export default class UpdateRentOfferDTO {
 
   @IsOptional()
   @IsArray({message: 'field "goods" must be an array'})
-  @IsEnum(Goods, {each: true, message: 'each item in "goods" array must be one of the following: "Breakfast", "Air conditioning", "Laptop", "Friendly workspace", "Baby seat", "Washer", "Towels", "Fridge"'})
+  @IsEnum(Goods, {each: true, message: `each item in "goods" array must be one of the following: ${Object.values(Goods).join(', ')}`})
   @ArrayUnique({message: 'all items in "goods" array must be unique'})
   @ArrayMinSize(MIN_GOODS_COUNT, {message: `field "goods" must contain ${MIN_GOODS_COUNT} items count`})
   public goods?: Goods[];

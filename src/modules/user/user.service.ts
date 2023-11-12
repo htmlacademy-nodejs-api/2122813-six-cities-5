@@ -102,6 +102,10 @@ export default class UserService implements UserServiceInterface {
     return existUser;
   }
 
+  public async deleteOfferFromUsersFavorites(offerId: string): Promise<void> {
+    await this.userModel.updateMany({'favorites': offerId}, {'$pull': { favorites: offerId }}, {new: true}).exec();
+  }
+
   public async canModify(authUserId: string, userId: string): Promise<boolean> {
     return authUserId === userId;
   }

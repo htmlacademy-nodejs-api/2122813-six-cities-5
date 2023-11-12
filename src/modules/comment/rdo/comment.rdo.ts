@@ -25,8 +25,7 @@ export default class CommentRDO {
   public rating!: number;
 
   @Expose({ name: 'createdAt'})
-  @Type(() => Date)
-  public postDate!: Date;
+  public postDate!: string;
 
   @Expose({ name: 'authorId'})
   @Type(() => Author)

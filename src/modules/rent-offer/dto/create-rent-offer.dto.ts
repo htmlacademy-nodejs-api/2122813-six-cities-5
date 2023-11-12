@@ -1,9 +1,9 @@
-import {ArrayMinSize, ArrayUnique, IsArray, IsBoolean, IsEnum, IsInt, IsLatitude, IsLongitude, Max, MaxLength, Min, MinLength } from 'class-validator';
+import { ArrayMaxSize, ArrayMinSize, ArrayUnique, IsArray, IsBoolean, IsEnum, IsInt, IsLatitude, IsLongitude, IsUrl, Max, MaxLength, Min, MinLength } from 'class-validator';
 
 import { Goods } from '../../../types/goods.type.js';
 import { OfferType } from '../../../types/offer-type.type.js';
-import { CityName } from '../../../types/city.type.js';
-import { ADULTS_COUNT, BEDROOMS_COUNT, DESCRIPTION_LENGTH, MIN_GOODS_COUNT, OFFER_PRICE, TITLE_LENGTH } from '../rent-offer.constants.js';
+import { CityNames } from '../../../types/city.type.js';
+import { ADULTS_COUNT, BEDROOMS_COUNT, DESCRIPTION_LENGTH, MIN_GOODS_COUNT, OFFER_PRICE, TITLE_LENGTH, IMAGES_COUNT } from '../rent-offer.constants.js';
 
 export default class CreateRentOfferDTO {
   @MinLength(TITLE_LENGTH.MIN, {message: `Minimum title length must be ${TITLE_LENGTH.MIN} chars`})
@@ -14,8 +14,17 @@ export default class CreateRentOfferDTO {
   @MaxLength(DESCRIPTION_LENGTH.MAX, {message: `Maximum description length must be ${DESCRIPTION_LENGTH.MAX} chars`})
   public description!: string;
 
-  @IsEnum(CityName, {message: 'city must be only one of the following: "Paris", "Cologne", "Brussels", "Amsterdam", "Hamburg", "Dusseldorf"'})
-  public city!: CityName;
+  @IsEnum(CityNames, {message: `city must be only one of the following: ${Object.values(CityNames).join(', ')}`})
+  public city!: CityNames;
+
+  @IsUrl({}, {message: 'preview image must be a valid URL string'})
+  public previewImage!: string;
+
+  @IsArray({message: '"images" field must be an array'})
+  @ArrayMinSize(IMAGES_COUNT, {message: `"images" field must contain ${IMAGES_COUNT} image files`})
+  @ArrayMaxSize(IMAGES_COUNT, {message: `"images" field must contain ${IMAGES_COUNT} image files`})
+  @IsUrl({}, {each: true, message: 'image must be a valid URL string'})
+  public images!: string[];
 
   @IsBoolean({message: '"isPremium" field must be a boolean'})
   public isPremium!: boolean;

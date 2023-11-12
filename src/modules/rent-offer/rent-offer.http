@@ -1,26 +1,34 @@
 #Предложения
 ## Создание нового предложения
 POST http://localhost:4000/rent-offers HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InVzZXItbm8tYWR2ZXJ0aXNlckBuZXd0ZXN0LnJ1IiwiaWQiOiI2NTRlNGU3NjQwZjYzZmM5MGQ0MmRiNTEiLCJpYXQiOjE2OTk2MzA3ODYsImV4cCI6MTY5OTcxNzE4Nn0.vPRhAXEqXEjguRY0S3v3yfgDSCYzcyyPnBsed7eQybI
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InVzZXItbm8tYWR2dGlzZXJAbmV3dGVzdC5mciIsImlkIjoiNjU1MGM1MDI1Y2E2YmY1NTg2ZTY4NmI5IiwiaWF0IjoxNjk5NzkyMTMwLCJleHAiOjE2OTk4Nzg1MzB9.cRxRBpMWeY45WNPyNL0JUIyv4Hd7XFEQpNQ16BReD-o
 Content-Type: application/json
 
 {
-  "title": "new offer with no img",
+  "title": "new offer for delete",
   "description": "long description for validation testoffer",
   "city": "Paris",
-
+  "previewImage": "https://imgtr.ee/images/2023/11/12/ba0409d593f5c50b44b0c4c6042834b7.jpeg",
+  "images": [
+    "https://imgtr.ee/images/2023/11/12/c401b7826fba0265c9496d6013520fe8.jpeg",
+    "https://imgtr.ee/images/2023/11/12/3756988a43254a156ebb40d348eac361.jpeg",
+    "https://imgtr.ee/images/2023/11/12/660a315c7410087d254363b8db7d4901.jpeg",
+    "https://imgtr.ee/images/2023/11/12/18ba90bae6e4add02358472b4b1333cc.jpeg",
+    "https://imgtr.ee/images/2023/11/12/9b108344aa7dee7b85e29d835856b934.jpeg",
+    "https://imgtr.ee/images/2023/11/12/103355aa3d58e9ddbf3e744aebb816b6.jpeg"
+  ],
   "isPremium": false,
   "type": "hotel",
   "bedrooms": 5,
   "maxAdults": 3,
   "price": 48410,
   "goods": [
-        "Washer",
-        "Laptop"
+        "Washer"
   ],
   "latitude": 50.837557,
   "longitude": 4.351697
 }
+
 ###
 
 ## Получить список предложений

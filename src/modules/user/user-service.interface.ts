@@ -28,4 +28,6 @@ export interface UserServiceInterface extends DocumentExistsInterface, DocumentM
   verifyUser(dto: AuthUserDTO, salt: string): Promise<DocumentType<UserEntity> | null>;
 
   canModify(authUserId: string, userId: string): Promise<boolean>;
+
+  deleteOfferFromUsersFavorites(offerId: string): Promise<void>;
 }

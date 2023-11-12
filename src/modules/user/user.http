@@ -5,7 +5,7 @@ Content-Type: application/json
 
 {
   "username": "testuser-3",
-  "email": "user-no-advertiser@newtest.ru",
+  "email": "user-no-advtiser@newtest.ru",
   "password": "weakpass1234",
   "status": "pro"
 }
@@ -25,11 +25,6 @@ Content-Type: application/json
 ## Запрос статуса авторизации пользователя
 GET  http://localhost:4000/users/auth HTTP/1.1
 Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InVzZXItbm8tYWR2ZXJ0aXNlckBuZXd0ZXN0LmNvbSIsImlkIjoiNjU0ZGRjZGQ0MGY2M2ZjOTBkNDJkYjJjIiwiaWF0IjoxNjk5NjAxNjI5LCJleHAiOjE2OTk2ODgwMjl9.2_HnUUp5QFu6wk620zYHiPsN93dviqd5v_ESPWDCLS8
-###
-
-## Завершения сеанса пользователя
-DELETE http://localhost:4000/users/logout HTTP/1.1
-X-token: 'somesupertoken'
 ###
 
 ## Добавление предложения в избранное

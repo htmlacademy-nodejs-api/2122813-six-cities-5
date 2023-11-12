@@ -1,5 +1,6 @@
 .vscode/
 /node_modules/
+/frontend/node_modules/
 /build/
 /lib/
 /dist/
@@ -10,5 +11,3 @@
 coverage
 *.log
 .env
-/uploads/
-/static/

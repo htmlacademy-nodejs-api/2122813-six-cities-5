@@ -48,27 +48,39 @@
       "g-easy@beenon.com",
       "flawa@freeflaw.ja"
     ],
-    "latitudes": [
-      "51.243402",
-      "52.37454",
-      "52.3285414",
-      "50.846557",
-      "50.837557",
-      "50.938361",
-      "50.917361",
-      "50.865556999999995",
-      "50.950361"
+    "previewImages": [
+      "https://imgtr.ee/images/2023/06/30/55cdd45acc7eeecdc1220f2e8f15d530.jpeg",
+      "https://imgtr.ee/images/2023/06/30/448fda6a9bd5718199e7a5d8f2f9d60f.jpeg",
+      "https://imgtr.ee/images/2023/06/30/e980cb310eda670921029516159bfe28.jpeg",
+      "https://imgtr.ee/images/2023/06/30/14bcee93a4e7e9c99b2333601cb2b4d7.jpeg",
+      "https://imgtr.ee/images/2023/06/30/c22a54641d34617db406c959be100725.jpeg",
+      "https://imgtr.ee/images/2023/06/30/506d741de4af18c4ca9484df9496ae1c.jpeg",
+      "https://imgtr.ee/images/2023/06/30/a3d836b856ff1a45de5efbf3d284b2d1.jpeg",
+      "https://imgtr.ee/images/2023/06/30/6bb182a1647892a1fc3110444ce097d3.jpeg",
+      "https://imgtr.ee/images/2023/06/30/e6cc1fae60e8451e9a6f2d7370d69486.jpeg",
+      "https://imgtr.ee/images/2023/06/30/b825ced53473ca712aa3ff42ee706a49.jpeg"
     ],
-    "longitudes": [
-      "6.959974",
-      "6.977974",
-      "4.351697",
-      "4.371696999999999",
-      "6.942156",
-      "6.961974",
-      "4.346697",
-      "4.9099759999999995",
-      "4.351697"
+    "images": [
+      "https://imgtr.ee/images/2023/06/30/84a84d90b797f49a5d71eda426300feb.jpeg",
+      "https://imgtr.ee/images/2023/06/30/d2dd4e43d374fa0f855f4a18b1b322e2.jpeg",
+      "https://imgtr.ee/images/2023/06/30/1f71d08a90078236c920c0d375b54fef.jpeg",
+      "https://imgtr.ee/images/2023/06/30/8b98e777abaee15326a78c092b29b471.jpeg",
+      "https://imgtr.ee/images/2023/06/30/2c9eacd51556fd2e1749203c62e95446.jpeg",
+      "https://imgtr.ee/images/2023/06/30/8b1371b35d0386590eab6f73e7100eb6.jpeg",
+      "https://imgtr.ee/images/2023/06/30/cf22f03fc210692786ab2ec3d34ca385.jpeg",
+      "https://imgtr.ee/images/2023/06/30/85e3b1a263921f1ca0316a6d5651f073.jpeg",
+      "https://imgtr.ee/images/2023/06/30/727a2ff71283302f0b5b2280199f797f.jpeg",
+      "https://imgtr.ee/images/2023/06/30/fe2d57b1e55dfbb8abccf7a0fc2a29a9.jpeg",
+      "https://imgtr.ee/images/2023/06/30/845da8a780cc28c2654ade01b47c5709.jpeg",
+      "https://imgtr.ee/images/2023/06/30/6109024e594c394d3b7d9d5a88b94fc9.jpeg",
+      "https://imgtr.ee/images/2023/06/30/ca60f0c232dd9990dbf3426a191fb1c7.jpeg",
+      "https://imgtr.ee/images/2023/06/30/817f976b5c2d9146a2728472801c8149.jpeg",
+      "https://imgtr.ee/images/2023/06/30/1da7d36b3d4c111a96d7d26efaf07771.jpeg",
+      "https://imgtr.ee/images/2023/06/30/0b819b2287e1ce199ae5ad68308aedb3.jpeg",
+      "https://imgtr.ee/images/2023/06/30/37ca514f64ade7b02195eed99c6f76f8.jpeg",
+      "https://imgtr.ee/images/2023/06/30/6216be88ce12e992afd7103edaa9cbe7.jpeg",
+      "https://imgtr.ee/images/2023/06/30/2b64f756bd7a39a4f41de517f55075ad.jpeg",
+      "https://imgtr.ee/images/2023/06/30/72d56d4d7fb70e9b16dfaef51b2c33c9.jpeg"
     ]
   }
 }

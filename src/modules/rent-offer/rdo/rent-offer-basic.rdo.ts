@@ -50,4 +50,10 @@ export default class RentOfferBasicRDO {
 
   @Expose()
   public commentsCount!: number;
+
+  @Expose()
+  public latitude!: number;
+
+  @Expose()
+  public longitude!: number;
 }

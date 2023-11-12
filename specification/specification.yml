@@ -23,6 +23,7 @@ paths:
             schema:
               $ref: "#/components/schemas/RegisterUserRequest"
         required: true
+
       responses:
         "201":
           description:
@@ -31,19 +32,24 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserResponse'
+                $ref: '#/components/schemas/UserAuthResponse'
+
+
         "400":
           description: Не пройдена валидация полей email или пароля
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ValidationErrorMessage'
+
+
         "409":
           description: Пользователь с таким email уже существует.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/RegUserErrorMessage'
+
 
   /users/{userId}/upload/avatar:
     put:
@@ -73,6 +79,7 @@ paths:
               example:
               - Bearer
               - j3jo3j4io3j4o3ijojdfoij
+
       requestBody:
         description: Файл изображения.
         content:
@@ -88,6 +95,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UploadAvatarResponse'
+
+
         "400":
           description: Некорректный запрос при попытке загрузить аватар чужому пользователю или
             некорректный формат изображения или некорректный userId
@@ -95,6 +104,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/FailedUploadFileMessage'
+
+
         '401':
           description: Пользователь не авторизован.
           content:
@@ -102,7 +113,10 @@ paths:
               schema:
                 $ref: '#/components/schemas/CheckAuthErrorMessage'
 
-  /users/{userId}/favorites/{offerId}:
+
+
+
+  /users//favorites/{offerId}:
     put:
       tags:
         - users
@@ -111,13 +125,6 @@ paths:
       security:
         - tokenAuth: []
       parameters:
-      - name: userId
-        in: path
-        description: id пользователя
-        required: true
-        schema:
-          type: string
-          example: Td233jJf4f9
       - name: offerId
         in: path
         description: id предложения, которое нужно добавить или удалить из избранного
@@ -147,9 +154,10 @@ paths:
           enum:
             - 0
             - 1
+
       responses:
         '200':
-          description: Массив избранных предложений пользователя.
+          description: Обновленное предложение.
           content:
             application/json:
               schema:
@@ -157,19 +165,22 @@ paths:
                 items:
                   type: object
                   allOf:
-                    - $ref: '#/components/schemas/RentOfferBasicResponse'
+                    - $ref: '#/components/schemas/RentOfferFullResponse'
+
         '401':
           description: Пользователь не авторизован.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/CheckAuthErrorMessage'
+
         '400':
           description: Предложение не найдено. Или не пройдена валидация полей или параметров строки запроса
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/OfferNotFoundMessage'
+
 
   /users/auth:
     post:
@@ -182,7 +193,9 @@ paths:
           application/json:
             schema:
                 $ref: '#/components/schemas/RequestAuth'
+
         required: true
+
       responses:
         "200":
           description:
@@ -191,13 +204,15 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserResponse'
+                $ref: '#/components/schemas/UserAuthResponse'
+
         "400":
           description: Пользователь с таким email не существует.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/FailedAuthErrorMessage'
+
         '401':
           description: Пользователь не авторизован. Неверный email или пароль
           content:
@@ -231,13 +246,15 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserResponse'
+                $ref: '#/components/schemas/UserBasicResponse'
+
         '401':
           description: Пользователь не авторизован
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/CheckAuthErrorMessage'
+
 
   /rent-offers:
     post:
@@ -274,18 +291,21 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RentOfferFullResponse'
+
         '401':
           description: Пользователь не авторизован
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/CheckAuthErrorMessage'
+
         '400':
           description: Ошибка при создании предложения. Не пройдена валидация.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ValidationErrorMessage'
+
 
     get:
       tags:
@@ -327,6 +347,7 @@ paths:
                   type: object
                   allOf:
                     - $ref: '#/components/schemas/RentOfferBasicResponse'
+
 
   /rent-offers/premium:
     get:
@@ -376,6 +397,7 @@ paths:
                   type: object
                   allOf:
                     - $ref: '#/components/schemas/RentOfferBasicResponse'
+
         '400':
           description: Ошибка параметров запроса. Указан не существующий город
           content:
@@ -383,7 +405,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/WrongPathErrorMessage'
 
-  /rent-offers/favorites/{userId}:
+
+  /rent-offers/favorites:
      get:
       tags:
       - rent-offers
@@ -394,13 +417,6 @@ paths:
         Получение списка избранных предложений.
         Доступно только авторизованным пользователям.
       parameters:
-        - name: userId
-          in: path
-          description: id пользователя
-          required: true
-          schema:
-            type: string
-            example: Td233jJf4f9
         - name: Authorization
           in: header
           description: Авторизационный токен пользователя
@@ -424,18 +440,22 @@ paths:
                   type: object
                   allOf:
                     - $ref: '#/components/schemas/RentOfferBasicResponse'
+
         '401':
           description: Пользователь не авторизован
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/CheckAuthErrorMessage'
+
+
         '400':
           description: Несоответствие токена и id пользователя
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/WrongPathErrorMessage'
+
 
   /rent-offers/{offerId}:
     get:
@@ -471,12 +491,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RentOfferFullResponse'
+
         '400':
           description: Предложение не найдено или некорректный запрос
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/OfferNotFoundMessage'
+
 
     patch:
       tags:
@@ -509,6 +531,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/UpdateRentOfferRequest'
+
       responses:
         '200':
           description: Обновленный объект предложения
@@ -516,18 +539,22 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RentOfferFullResponse'
+
         '401':
           description: Пользователь не авторизован.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/CheckAuthErrorMessage'
+
         '400':
           description: Ошибка валидации при редактировании предложения.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ValidationErrorMessage'
+
+
 
     delete:
       tags:
@@ -555,15 +582,19 @@ paths:
               example:
                 - Bearer
                 - j3jo3j4io3j4o3ijojdfoij
+
+
       responses:
         '204':
           description: Предложение успешно удалено вместе с комментариями к нему
+
         '401':
           description: Пользователь не авторизован.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/CheckAuthErrorMessage'
+
         '400':
           description: Ошибка при удалении предложения другого пользователя
           content:
@@ -571,119 +602,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/UpdateOfferErrorMessage'
 
-  /rent-offers/{offerId}/upload/preview:
-    put:
-      tags:
-        - users
-      summary: Загрузить превью изображение предложения
-      security:
-        - tokenAuth: []
-      description: Загружает превью изображение предложения. Изображение должно быть в формате 'png' или 'jpeg'.
-      parameters:
-        - name: offerId
-          in: path
-          description: id предложения
-          required: true
-          schema:
-            type: string
-            example: Td233jJf4f9
-        - name: Authorization
-          in: header
-          description: Авторизационный токен пользователя
-          required: true
-          schema:
-            type: array
-            items:
-              type: string
-              example:
-              - Bearer
-              - j3jo3j4io3j4o3ijojdfoij
 
-      requestBody:
-        description: Файл изображения.
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/UploadPreviewRequest"
-        required: true
 
-      responses:
-        "201":
-          description: Изображение успешно загружено. Возвращает ссылку на изображение.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UploadPreviewResponse'
-        "400":
-          description: Некорректный запрос при попытке загрузить изображение чужому офферу или
-            некорректный формат изображения или некорректный offerI
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/FailedUploadFileMessage'
-        '401':
-          description: Пользователь не авторизован.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/CheckAuthErrorMessage'
-
-  /rent-offers/{offerId}/upload/images:
-    put:
-      tags:
-        - users
-      summary: Загрузить массив изображений предложения
-      security:
-        - tokenAuth: []
-      description: Загружает изображения предложения. Изображения должны быть в формате 'png' или 'jpeg'.
-      parameters:
-        - name: offerId
-          in: path
-          description: id предложения
-          required: true
-          schema:
-            type: string
-            example: Td233jJf4f9
-        - name: Authorization
-          in: header
-          description: Авторизационный токен пользователя
-          required: true
-          schema:
-            type: array
-            items:
-              type: string
-              example:
-              - Bearer
-              - j3jo3j4io3j4o3ijojdfoij
-
-      requestBody:
-        description: Файлы изображения.
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/UploadImagesRequest"
-        required: true
-
-      responses:
-        "201":
-          description: Изображения успешно загружены. Возвращает ссылки на изображения предложения.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UploadImagesResponse'
-        "400":
-          description: Некорректный запрос при попытке загрузить изображение чужому офферу или
-            некорректный формат изображения или некорректный offerI
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/FailedUploadFileMessage'
-        '401':
-          description: Пользователь не авторизован.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/CheckAuthErrorMessage'
 
   /rent-offers/{offerId}/comments:
     get:
@@ -743,18 +663,25 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CommentResponse'
+
         '401':
           description: Пользователь не авторизован.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/CheckAuthErrorMessage'
+
         '400':
           description: Ошибка при создании комментария. Не пройдена валидация
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ValidationCommentErrorMessage'
+
+
+
+
+
 components:
   schemas:
     RegisterUserRequest:
@@ -787,9 +714,33 @@ components:
         - username
         - password
         - status
-    UserResponse:
+
+
+    UserBasicResponse:
       type: object
       properties:
+        email:
+          type: string
+          format: email
+          example: test@somemail.com
+        username:
+          type: string
+          example: SomeNick
+        status:
+          type: string
+          example: обычный
+        avatarPath:
+          type: string
+          format: binary
+          example: /static/avatar/3.jpg
+
+
+    UserAuthResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          example: jkj3ij3i3j3ij
         email:
           type: string
           format: email
@@ -809,6 +760,7 @@ components:
           example: "T2xpdmVyLmNvbm5lckBnbWFpbC5jb20="
           readOnly: true
 
+
     UploadAvatarRequest:
       type: object
       properties:
@@ -819,6 +771,7 @@ components:
       required:
         - avatar
 
+
     UploadAvatarResponse:
       type: object
       properties:
@@ -826,6 +779,7 @@ components:
           type: string
           format: binary
           example: /static/avatar/3.jpg
+
 
     RequestAuth:
       type: object
@@ -845,12 +799,14 @@ components:
         - email
         - password
 
+
     RegUserErrorMessage:
       type: object
       properties:
         errorMessage:
           type: string
           example: Пользователь с таким e-mail уже существует
+
 
     FailedUploadFileMessage:
       type: object
@@ -859,12 +815,14 @@ components:
           type: string
           example: Некорректный формат изображения. Поддерживаемые форматы '.jpg' и '.png'.
 
+
     CheckAuthErrorMessage:
       type: object
       properties:
         errorMessage:
           type: string
           example: Пользователь не авторизован.
+
 
     FailedAuthErrorMessage:
       type: object
@@ -873,12 +831,14 @@ components:
           type: string
           example: Пользователь с таким email не существует.
 
+
     WrongPathErrorMessage:
       type: object
       properties:
         errorMessage:
           type: string
           example: Некорректный запрос.
+
 
     #Rent offer schemas
     Advertiser-Author:
@@ -901,6 +861,8 @@ components:
           type: string
           format: binary
           example: /static/avatar/3.jpg
+
+
     RentOfferBasicResponse:
       type: object
       properties:
@@ -948,6 +910,14 @@ components:
         price:
           type: integer
           example: 1200
+        latitude:
+          type: number
+          example: 24.3434
+        longitude:
+          type: number
+          example: 23.4522
+
+
     RentOfferFullResponse:
       type: object
       properties:
@@ -1031,6 +1001,8 @@ components:
               example: 4.67387753
         advertiser:
           $ref: '#/components/schemas/Advertiser-Author'
+
+
     NewRentOfferRequest:
       type: object
       properties:
@@ -1117,8 +1089,7 @@ components:
             enum:
               - Breakfast
               - Air conditioning
-              - Laptop
-              - Friendly workspace
+              - Laptop Friendly workspace
               - Baby seat
               - Washer
               - Towels
@@ -1147,6 +1118,7 @@ components:
         - goods
         - latitude
         - longitude
+
 
     UpdateRentOfferRequest:
       type: object
@@ -1225,8 +1197,7 @@ components:
             enum:
               - Breakfast
               - Air conditioning
-              - Laptop
-              - Friendly workspace
+              - Laptop Friendly workspace
               - Baby seat
               - Washer
               - Towels
@@ -1243,6 +1214,7 @@ components:
           example: 4.673877537499948
       additionalProperties: false
 
+
     UploadPreviewRequest:
       type: object
       properties:
@@ -1253,6 +1225,7 @@ components:
       required:
         - previewImage
 
+
     UploadPreviewResponse:
       type: object
       properties:
@@ -1260,6 +1233,7 @@ components:
           type: string
           format: binary
           example: static/preview.jpg
+
 
     UploadImagesRequest:
       type: object
@@ -1280,6 +1254,7 @@ components:
       required:
         - images
 
+
     UploadImagesResponse:
       type: object
       properties:
@@ -1295,6 +1270,9 @@ components:
               - image-5.jpg
               - image-6.jpg
 
+
+
+
     ValidationErrorMessage:
       type: object
       properties:
@@ -1308,12 +1286,15 @@ components:
         errorMessage:
           type: string
           example: Предложение не найдено.
+
     UpdateOfferErrorMessage:
       type: object
       properties:
         errorMessage:
           type: string
           example: Вы не можете редактировть или удалять предложения других пользователей.
+
+
     #  comment schemas
     NewCommentRequest:
       type: object
@@ -1338,6 +1319,7 @@ components:
         - text
         - rating
 
+
     CommentResponse:
       type: object
       properties:
@@ -1360,14 +1342,19 @@ components:
           type: object
           readOnly: true
           $ref: '#/components/schemas/Advertiser-Author'
+
+
     ValidationCommentErrorMessage:
       type: object
       properties:
         errorMessage:
           type: string
           example: Невозможно создать комментарий. Проверьте данные
+
+
   securitySchemes:
     tokenAuth:
       type: apiKey
       name: Authorization
       in: header
+

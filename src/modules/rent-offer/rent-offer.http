@@ -5,10 +5,18 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InVzZXItbm8tYWR2ZXJ0aXNlc
 Content-Type: application/json
 
 {
-  "title": "new offer with no img",
+  "title": "new offer for delete",
   "description": "long description for validation testoffer",
   "city": "Paris",
-
+  "previewImage": "https://imgtr.ee/images/2023/06/30/84a84d90b797f49a5d71eda426300feb.jpeg",
+  "images": [
+    "https://imgtr.ee/images/2023/06/30/84a84d90b797f49a5d71eda426300feb.jpeg",
+    "https://imgtr.ee/images/2023/06/30/84a84d90b797f49a5d71eda426300feb.jpeg",
+    "https://imgtr.ee/images/2023/06/30/84a84d90b797f49a5d71eda426300feb.jpeg",
+    "https://imgtr.ee/images/2023/06/30/84a84d90b797f49a5d71eda426300feb.jpeg",
+    "https://imgtr.ee/images/2023/06/30/84a84d90b797f49a5d71eda426300feb.jpeg",
+    "https://imgtr.ee/images/2023/06/30/84a84d90b797f49a5d71eda426300feb.jpeg"
+  ],
   "isPremium": false,
   "type": "hotel",
   "bedrooms": 5,
@@ -21,6 +29,7 @@ Content-Type: application/json
   "latitude": 50.837557,
   "longitude": 4.351697
 }
+
 ###
 
 ## Получить список предложений

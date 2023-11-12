@@ -7,7 +7,6 @@ import { RentOfferEntity } from './rent-offer.entity.js';
 import CreateRentOfferDTO from './dto/create-rent-offer.dto.js';
 import UpdateRentOfferDTO from './dto/update-rent-offer.dto.js';
 import { SortType } from '../../types/sort-order.type.js';
-import { DEFAULT_PREVIEW_IMAGE } from './rent-offer.constants.js';
 import { getFullServerPath } from '../../core/utils/common.js';
 import { ConfigInterface } from '../../core/config/config.interface.js';
 import { RestSchema } from '../../core/config/rest.schema.js';
@@ -24,17 +23,12 @@ export default class RentOfferService implements RentOfferServiceInterface {
   ) {}
 
   public async create(dto: CreateRentOfferDTO): Promise<DocumentType<RentOfferEntity>> {
-    let rentOffer = await this.rentOfferModel.create({...dto, previewImage: DEFAULT_PREVIEW_IMAGE}).then((offer) => {
+    let rentOffer = await this.rentOfferModel.create(dto).then((offer) => {
       offer.isFavorite = false;
       return offer;
     });
 
     rentOffer = await rentOffer.populate(['advertiserId']);
-
-    Object.assign(rentOffer, {
-      previewImage: this.buildPreviewImagePath(rentOffer),
-      images: this.buildOfferImagesPath(rentOffer)
-    });
 
     Object.assign(rentOffer.advertiserId, {avatar: this.buildAvatarPath(rentOffer.advertiserId as UserEntity)});
 
@@ -72,7 +66,8 @@ export default class RentOfferService implements RentOfferServiceInterface {
                 true,
                 false
               ]
-          }
+          },
+          id: { $toString: '$_id'}
         }
       },
       { $unset: 'user' },
@@ -80,11 +75,6 @@ export default class RentOfferService implements RentOfferServiceInterface {
 
     result = await this.rentOfferModel.populate(result, {path: 'advertiserId'});
     const rentOffer = result[0];
-
-    Object.assign(rentOffer, {
-      previewImage: this.buildPreviewImagePath(rentOffer),
-      images: this.buildOfferImagesPath(rentOffer)
-    });
 
     Object.assign(rentOffer.advertiserId, {avatar: this.buildAvatarPath(rentOffer.advertiserId as UserEntity)});
 
@@ -119,18 +109,14 @@ export default class RentOfferService implements RentOfferServiceInterface {
                 true,
                 false
               ]
-          }
+          },
+          id: { $toString: '$_id'}
         }
       },
       { $unset: 'user' },
       { $sort: { createdAt: SortType.Down }},
       { $limit: offersCount}
-    ]).exec().then((offers) => {
-      offers.forEach((offer) => {
-        Object.assign(offer, {previewImage: this.buildPreviewImagePath(offer)});
-      });
-      return offers;
-    });
+    ]).exec();
   }
 
   public async canModify(userId: string, offerId: string): Promise<boolean> {
@@ -185,18 +171,14 @@ export default class RentOfferService implements RentOfferServiceInterface {
                 true,
                 false
               ]
-          }
+          },
+          id: { $toString: '$_id'}
         }
       },
       { $unset: 'user' },
       { $sort: { createdAt: SortType.Down }},
       { $limit: offersCount}
-    ]).exec().then((offers) => {
-      offers.forEach((offer) => {
-        Object.assign(offer, {previewImage: this.buildPreviewImagePath(offer)});
-      });
-      return offers;
-    });
+    ]).exec();
   }
 
   public async findUserFavorites(userId: string): Promise<DocumentType<RentOfferEntity>[] | null> {
@@ -214,15 +196,10 @@ export default class RentOfferService implements RentOfferServiceInterface {
       },
       { $unwind: { path: '$user', preserveNullAndEmptyArrays: true } },
       { $match: { $expr: {$in: ['$_id', '$user.favorites'] } } },
-      { $addFields: { isFavorite: true } },
+      { $addFields: { isFavorite: true, id: { $toString: '$_id'} } },
       { $unset: 'user' },
       { $sort: { createdAt: SortType.Down }},
-    ]).exec().then((offers) => {
-      offers.forEach((offer) => {
-        Object.assign(offer, {previewImage: this.buildPreviewImagePath(offer)});
-      });
-      return offers;
-    });
+    ]).exec();
   }
 
   public async incCommentCount(offerId: string): Promise<DocumentType<RentOfferEntity> | null> {
@@ -273,18 +250,5 @@ export default class RentOfferService implements RentOfferServiceInterface {
     }
 
     return `${this.uploadDirPath}/${advertiser.id}/avatar/${advertiser.avatar}`;
-  }
-
-  private buildPreviewImagePath(offer: RentOfferEntity) {
-    if (DEFAULT_STATIC_IMAGES.includes(offer.previewImage)) {
-      return `${this.staticDirPath}/${offer.previewImage}`;
-    }
-    return `${this.uploadDirPath}/${offer.advertiserId.id}/offers/${offer._id}/preview`;
-  }
-
-  private buildOfferImagesPath(offer: RentOfferEntity) {
-    return offer.images.map((image) =>
-      `${this.uploadDirPath}/${offer.advertiserId.id}/offers/${offer._id}/images/${image}`
-    );
   }
 }

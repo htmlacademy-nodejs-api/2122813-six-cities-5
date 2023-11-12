@@ -21,8 +21,8 @@ export default class CommentService implements CommentServiceInterface {
 
   public async create(dto: CreateCommentDTO): Promise<DocumentType<CommentEntity>> {
     const newComment = await this.commentModel.create(dto).then((comment) => comment.populate('authorId'));
-
     Object.assign(newComment.authorId, {avatar: this.buildAvatarPath(newComment.authorId as UserEntity)});
+
     return newComment;
   }
 

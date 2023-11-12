@@ -14,6 +14,11 @@ export default class GenerateCommand implements CliCommandInterface {
 
   public async execute(...params: string[]): Promise<void> {
     const [count, filepath, url] = params;
+
+    if (params.length !== 3) {
+      throw new Error('Invalid command params length');
+    }
+
     const offerCount = Number.parseInt(count, RADIX);
 
     this.initialData = await got.get(url).json().catch(() => {

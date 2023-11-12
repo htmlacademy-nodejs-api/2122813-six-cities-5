@@ -67,5 +67,10 @@ export enum OFFER_PRICE {
   MAX = 100_000
 }
 
+export enum OFFER_RATING {
+  MIN = 0,
+  MAX = 5
+}
+
 export const MIN_GOODS_COUNT = 1;
 export const IMAGES_COUNT = 6;

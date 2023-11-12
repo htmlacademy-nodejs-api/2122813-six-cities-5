@@ -1,21 +1,11 @@
 import { GeneratorInterface } from './generator.interface.js';
 import { getRandomOfferDate, getRandomNumber, getRandomArrItem, getRandomArrItems } from '../../core/utils/random.js';
-import { CityName } from '../../types/city.type.js';
+import { CityNames } from '../../types/city.type.js';
 import { OfferType } from '../../types/offer-type.type.js';
 import { Goods } from '../../types/goods.type.js';
 import { UserStatus } from '../../types/user-status.type.js';
 import type { MockData } from '../../types/mock-data.type.js';
-
-const MIN_PRICE = 100;
-const MAX_PRICE = 100000;
-
-const MIN_RATING = 0;
-const MAX_RATING = 5;
-
-const MIN_BEDROOMS = 1;
-const MAX_BADROOMS = 8;
-const MIN_ADULTS = 1;
-const MAX_ADULTS = 10;
+import { ADULTS_COUNT, BEDROOMS_COUNT, IMAGES_COUNT, OFFER_PRICE, OFFER_RATING } from '../rent-offer/rent-offer.constants.js';
 
 export default class OfferGenerator implements GeneratorInterface {
   constructor(private readonly mockData: MockData) {}
@@ -25,25 +15,25 @@ export default class OfferGenerator implements GeneratorInterface {
     const description = getRandomArrItem<string>(this.mockData.descriptions);
     const offerDate = getRandomOfferDate().toISOString();
 
-    const city = getRandomArrItem<string>(Object.values(CityName));
+    const city = getRandomArrItem<string>(Object.values(CityNames));
     const isPremium = getRandomArrItem<string>(['true', 'false']);
-    const rating = getRandomNumber(MIN_RATING, MAX_RATING, 1).toString();
+    const previewImage = getRandomArrItem<string>(this.mockData.previewImages);
+    const images = getRandomArrItems<string>(this.mockData.images, IMAGES_COUNT).join(';');
+    const rating = getRandomNumber(OFFER_RATING.MIN, OFFER_RATING.MAX, 1).toString();
     const type = getRandomArrItem<string>(Object.values(OfferType));
-    const bedrooms = getRandomNumber(MIN_BEDROOMS, MAX_BADROOMS).toString();
-    const maxAdults = getRandomNumber(MIN_ADULTS, MAX_ADULTS).toString();
-    const price = getRandomNumber(MIN_PRICE, MAX_PRICE).toString();
+    const bedrooms = getRandomNumber(BEDROOMS_COUNT.MIN, BEDROOMS_COUNT.MAX).toString();
+    const maxAdults = getRandomNumber(ADULTS_COUNT.MIN, ADULTS_COUNT.MAX).toString();
+    const price = getRandomNumber(OFFER_PRICE.MIN, OFFER_PRICE.MAX).toString();
     const goods = getRandomArrItems<string>(Object.values(Goods)).join(';');
     const username = getRandomArrItem<string>(this.mockData.usernames);
     const email = getRandomArrItem<string>(this.mockData.emails);
     const userStatus = getRandomArrItem<string>(Object.values(UserStatus));
-    const longitude = getRandomArrItem<string>(this.mockData.longitudes);
-    const latitude = getRandomArrItem<string>(this.mockData.latitudes);
 
     return [
       title, description, offerDate, city,
-      isPremium, rating, type, bedrooms,
-      maxAdults, price, goods, username,
-      email, userStatus, longitude, latitude
+      isPremium, previewImage, images, rating, type,
+      bedrooms, maxAdults, price, goods,
+      username, email, userStatus
     ].join('\t');
   }
 }

@@ -1,4 +1,5 @@
 import typegoose, { Ref, defaultClasses } from '@typegoose/typegoose';
+
 import { UserEntity } from '../user/user.entity.js';
 import { CityNames } from '../../types/city.type.js';
 import { OfferType } from '../../types/offer-type.type.js';
@@ -17,6 +18,7 @@ export interface RentOfferEntity extends defaultClasses.Base {}
 })
 // eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
 export class RentOfferEntity extends defaultClasses.TimeStamps {
+
   @prop({required: true, trim: true})
   public title!: string;
 

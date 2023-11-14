@@ -36,9 +36,11 @@ export class UploadFileMiddleware implements MiddlewareInterface {
       destination: destPath,
       filename: (_request, file, callback) => {
         const extension = file.originalname.split('.').pop();
+
         if (!extension || !allowedExtensions.includes(extension)) {
           return next(new HttpError(StatusCodes.BAD_REQUEST, 'incorrect file extension', 'File validation'));
         }
+
         const fileId = nanoid();
         callback(null, `${fileId}.${extension}`);
       }

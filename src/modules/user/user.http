@@ -28,8 +28,8 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InVzZXItbm8tYWR2ZXJ0aXNlc
 ###
 
 ## Добавление предложения в избранное
-PUT http://localhost:4000/users/654e4e7640f63fc90d42db51/favorites/654de0fd40f63fc90d42db38?isFav=1 HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InVzZXItbm8tYWR2ZXJ0aXNlckBuZXd0ZXN0LnJ1IiwiaWQiOiI2NTRlNGU3NjQwZjYzZmM5MGQ0MmRiNTEiLCJpYXQiOjE2OTk2MzA3ODYsImV4cCI6MTY5OTcxNzE4Nn0.vPRhAXEqXEjguRY0S3v3yfgDSCYzcyyPnBsed7eQybI
+PUT http://localhost:4000/users/65512466e31b247f45b2aea8/favorites/65530d40a5d55eef56d2973f?isFav=1 HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InVzZXItbm8tYWR2dGlzZXJAbmV3dGVzdC5mciIsImlkIjoiNjU1MzBkNDBhNWQ1NWVlZjU2ZDI5NzNmIiwiaWF0IjoxNjk5OTQxNjk2LCJleHAiOjE3MDAwMjgwOTZ9.4iqvaUT1cVe66iBiF-pBMsnHmafx5biWtjfvfmPr5yE
 
 
 ###

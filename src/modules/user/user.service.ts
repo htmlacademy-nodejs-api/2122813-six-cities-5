@@ -25,7 +25,6 @@ export default class UserService implements UserServiceInterface {
   ) {}
 
   public async create(dto: CreateUserDTO, salt: string): Promise<DocumentType<UserEntity>> {
-
     const user = new UserEntity(dto);
     user.setPassword(dto.password, salt);
 
@@ -42,6 +41,7 @@ export default class UserService implements UserServiceInterface {
     if(existUser) {
       Object.assign(existUser, {avatar: this.buildUserAvatarPath(existUser)});
     }
+
     return existUser;
   }
 
@@ -57,9 +57,11 @@ export default class UserService implements UserServiceInterface {
 
   public async findOrCreate(dto: CreateUserDTO, salt: string): Promise<DocumentType<UserEntity>> {
     const existedUser = await this.findByEmail(dto.email);
+
     if (existedUser) {
       return existedUser;
     }
+
     return this.create(dto, salt);
   }
 
@@ -78,6 +80,7 @@ export default class UserService implements UserServiceInterface {
 
   public async updateById(userId: string, dto: UpdateUserDTO): Promise<DocumentType<UserEntity> | null> {
     const updatedUser = await this.userModel.findByIdAndUpdate(userId, dto, {new: true});
+
     if(updatedUser) {
       Object.assign(updatedUser, {avatar: this.buildUserAvatarPath(updatedUser)});
     }
@@ -96,9 +99,11 @@ export default class UserService implements UserServiceInterface {
 
   public async verifyUser(dto: AuthUserDTO, salt: string): Promise<DocumentType<UserEntity> | null> {
     const existUser = await this.findByEmail(dto.email);
+
     if (!existUser || !existUser.verifyPassword(dto.password, salt)) {
       return null;
     }
+
     return existUser;
   }
 
@@ -121,9 +126,11 @@ export default class UserService implements UserServiceInterface {
   }
 
   private buildUserAvatarPath(user: UserEntity) {
+
     if (DEFAULT_STATIC_IMAGES.includes(user.avatar)) {
       return `${this.staticDirPath}/${user.avatar}`;
     }
+
     return `${this.uploadDirPath}/${user.id}/avatar/${user.avatar}`;
   }
 }

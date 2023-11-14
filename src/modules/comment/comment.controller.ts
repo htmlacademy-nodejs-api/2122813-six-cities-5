@@ -49,6 +49,7 @@ export default class CommentController extends Controller {
         'CommentController'
       );
     }
+
     const author = res.locals.user;
     const comment = await this.commentService.create({...commentData, authorId: author.id});
     await this.offerService.incCommentCount(commentData.offerId);

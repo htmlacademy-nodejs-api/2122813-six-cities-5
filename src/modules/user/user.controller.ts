@@ -48,6 +48,16 @@ export default class UserController extends Controller {
     super(logger, configService);
     this.logger.info('Register routes for User Controller…');
     this.addRoute({
+      path: '/favorites/:offerId',
+      method: HttpMethod.Put,
+      handler:this.updateFavoriteStatus,
+      middlewares: [
+        new PrivateRouteMiddleware(),
+        new ValidateObjectIdMiddleware('offerId'),
+        new DocumentExistsMiddleware(this.rentOfferService, 'Rent-offer', 'offerId'),
+      ]
+    });
+    this.addRoute({
       path: '/register',
       method: HttpMethod.Post,
       handler: this.register,
@@ -76,20 +86,11 @@ export default class UserController extends Controller {
         new UploadFileMiddleware(this.configService.get('UPLOAD_DIRECTORY_PATH'), 'avatar')
       ]
     });
-    this.addRoute({
-      path: '/favorites/:offerId',
-      method: HttpMethod.Put,
-      handler:this.updateFavoriteStatus,
-      middlewares: [
-        new PrivateRouteMiddleware(),
-        new ValidateObjectIdMiddleware('offerId'),
-        new DocumentExistsMiddleware(this.rentOfferService, 'Rent-offer', 'offerId'),
-      ]
-    });
   }
 
   public async register({body: registerData}: Request<ParamsDictionary, ResBody, CreateUserDTO>, res: Response): Promise<void> {
     const existUser = await this.userService.findByEmail(registerData.email);
+
     if (existUser) {
       throw new HttpError(
         StatusCodes.CONFLICT,
@@ -97,6 +98,7 @@ export default class UserController extends Controller {
         'UserController'
       );
     }
+
     const newUser = await this.userService.create(registerData, this.configService.get('SALT'));
     const token = await createJWT(
       JWT_ALGORITHM,
@@ -112,23 +114,27 @@ export default class UserController extends Controller {
   public async checkAuth(_req: Request, res: Response): Promise<void> {
     const {email} = res.locals.user;
     const foundedUser = await this.userService.findByEmail(email);
+
     if (!foundedUser) {
       throw new AuthError(
         'Wrong authentication data. Check your login and password.',
         'UserController'
       );
     }
+
     this.ok(res, fillRDO(UserBasicRDO, foundedUser));
   }
 
   public async requestAuth({body: authData}: Request<ParamsDictionary, ResBody, AuthUserDTO>, res: Response): Promise<void> {
     const existUser = await this.userService.verifyUser(authData, this.configService.get('SALT'));
+
     if (!existUser) {
       throw new AuthError(
         'Wrong authentication data. Check your login and password.',
         'UserController'
       );
     }
+
     const token = await createJWT(
       JWT_ALGORITHM,
       this.configService.get('JWT_SECRET'),
@@ -143,6 +149,7 @@ export default class UserController extends Controller {
 
   public async uploadAvatar(req: Request<ParamsUserDetails, ResBody, UpdateUserDTO>, res: Response): Promise<void> {
     const {userId} = req.params;
+
     if (req.file) {
       const uploadFile = {avatar: req.file.filename};
       const updatedUser = await this.userService.updateById(userId, uploadFile);
@@ -151,10 +158,11 @@ export default class UserController extends Controller {
   }
 
   public async updateFavoriteStatus({params: {offerId}, query: {isFav}}: Request<ParamsFavoriteOfferDetails>, res: Response): Promise<void> {
+
     if(!isFav || (isFav !== '0' && isFav !== '1')) {
       throw new HttpError(
         StatusCodes.BAD_REQUEST,
-        'Incorrect path Error. Check your request',
+        'Invalid favorite status. The "isFav" query parameter must be either "0" or "1".',
         'UserController'
       );
     }

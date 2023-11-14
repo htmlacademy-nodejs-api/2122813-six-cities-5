@@ -245,6 +245,7 @@ export default class RentOfferService implements RentOfferServiceInterface {
   }
 
   private buildAvatarPath(advertiser: UserEntity) {
+
     if (DEFAULT_STATIC_IMAGES.includes(advertiser.avatar)) {
       return `${this.staticDirPath}/${advertiser.avatar}`;
     }

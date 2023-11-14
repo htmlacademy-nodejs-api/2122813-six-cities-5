@@ -116,7 +116,7 @@ paths:
 
 
 
-  /users//favorites/{offerId}:
+  /users/favorites/{offerId}:
     put:
       tags:
         - users
@@ -630,7 +630,7 @@ paths:
                 allOf:
                   - $ref: '#/components/schemas/CommentResponse'
 
-  /rent-offers/comments:
+  /comments:
     post:
       tags:
         - comments

@@ -55,6 +55,14 @@ export default class RentOfferController extends Controller {
     this.addRoute({path: '/', method: HttpMethod.Get, handler: this.getOffers});
     this.addRoute({path: '/premium', method: HttpMethod.Get, handler: this.getPremiumOffers});
     this.addRoute({
+      path: '/favorites',
+      method: HttpMethod.Get,
+      handler:this.getFavorites,
+      middlewares: [
+        new PrivateRouteMiddleware(),
+      ]
+    });
+    this.addRoute({
       path: '/:offerId',
       method: HttpMethod.Get,
       handler: this.getOfferDetails,
@@ -95,14 +103,6 @@ export default class RentOfferController extends Controller {
         new DocumentExistsMiddleware(this.rentOfferService, 'Rent-offer', 'offerId')
       ]
     });
-    this.addRoute({
-      path: '/favorites',
-      method: HttpMethod.Get,
-      handler:this.getFavorites,
-      middlewares: [
-        new PrivateRouteMiddleware(),
-      ]
-    });
   }
 
   public async createOffer({body: offerData}: Request<ParamsDictionary, ResBody, CreateRentOfferDTO>, res: Response): Promise<void> {
@@ -120,6 +120,7 @@ export default class RentOfferController extends Controller {
   }
 
   public async getPremiumOffers({query: {city}}: Request, res: Response): Promise<void> {
+
     if (!city || !Object.values(CityNames).map((cityName) => cityName.toString()).includes(city.toString())) {
       throw new HttpError(
         StatusCodes.BAD_REQUEST,
@@ -127,6 +128,7 @@ export default class RentOfferController extends Controller {
         'RentOfferController'
       );
     }
+
     const userId = res.locals.user ? res.locals.user.id : '';
     const premiumOffers = await this.rentOfferService.findPremium(city.toString(), MAX_PREMIUM_OFFERS_COUNT, userId);
     const offersResponse = premiumOffers?.map((offer) => fillRDO(RentOfferBasicRDO, offer));

@@ -11,7 +11,7 @@ export default class PinoLogger implements LoggerInterface {
   constructor() {
     const modulePath = getCurrentModuleDirectoryPath();
     const logFilePath = 'logs/rest.log';
-    const destination = resolve(modulePath, '../../../', logFilePath);
+    const destination = resolve(modulePath, '../../../../', logFilePath);
 
     const multiTransport = transport({
       targets: [

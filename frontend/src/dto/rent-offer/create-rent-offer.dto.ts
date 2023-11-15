@@ -1,6 +1,5 @@
 import { CityNames, Goods, OfferType } from './rent-offer.constants';
 
-
 export default class CreateRentOfferDTO {
   public title!: string;
 

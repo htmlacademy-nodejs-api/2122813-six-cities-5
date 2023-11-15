@@ -58,6 +58,7 @@ export default class CommentService implements CommentServiceInterface {
   }
 
   private buildAvatarPath(author: UserEntity) {
+
     if (DEFAULT_STATIC_IMAGES.includes(author.avatar)) {
       return `${this.staticDirPath}/${author.avatar}`;
     }

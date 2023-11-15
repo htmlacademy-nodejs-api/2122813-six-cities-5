@@ -12,6 +12,7 @@ import { getRandomArrItem } from '../utils/random.js';
 import { passwords } from '../../../mocks/passwords.js';
 import ConfigService from '../config/config.service.js';
 
+const REQUIRED_PARAMS_COUNT = 1;
 
 export default class ImportCommand implements CliCommandInterface {
   public readonly name = '--import';
@@ -55,7 +56,7 @@ export default class ImportCommand implements CliCommandInterface {
   }
 
   public async execute(...params: string[]): Promise<void> {
-    if (params.length !== 1) {
+    if (params.length !== REQUIRED_PARAMS_COUNT) {
       throw new Error('Invalid command params length');
     }
 

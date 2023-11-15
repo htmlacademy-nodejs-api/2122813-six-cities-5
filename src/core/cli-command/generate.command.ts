@@ -7,6 +7,7 @@ import TSVFileWriter from '../file-writer/ftsv-file-writer.js';
 import type { MockData } from '../../types/mock-data.type.js';
 
 const RADIX = 10;
+const COMMAND_PARAMS_COUNT = 3;
 
 export default class GenerateCommand implements CliCommandInterface {
   public readonly name = '--generate';
@@ -15,7 +16,7 @@ export default class GenerateCommand implements CliCommandInterface {
   public async execute(...params: string[]): Promise<void> {
     const [count, filepath, url] = params;
 
-    if (params.length !== 3) {
+    if (params.length !== COMMAND_PARAMS_COUNT) {
       throw new Error('Invalid command params length');
     }
 
